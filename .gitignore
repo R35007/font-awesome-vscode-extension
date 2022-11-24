@@ -1,8 +1,8 @@
 out
 dist
-node_modules
+/node_modules
 .vscode-test/
 package-lock.json
-/**.vsix
-/**.css
-/**.css.amp
+**.vsix
+**.css
+**.css.map

@@ -11,4 +11,4 @@ vsc-extension-quickstart.md
 **/*.scss
 **/*.css.map
 images/demos/**
-extension-packages/**
+**/*.vsix
