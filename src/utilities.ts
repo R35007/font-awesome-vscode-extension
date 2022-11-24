@@ -61,14 +61,8 @@ const getSVGTextFromSVGFile = (filePath: string): string => {
 };
 
 const getSVGTextFromImageFile = async (filePath: string): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        potrace.trace(filePath, {}, function (err: any, svg: any) {
-            if (err) {
-                resolve('');
-                console.log(err);
-            };
-            resolve(svg);
-        });
+    return new Promise(resolve => {
+        potrace.trace(filePath, { color: Settings.fillColor }, (_err: any, svg: any) => resolve(svg || ""));
     });
 };
 

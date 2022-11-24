@@ -2,7 +2,7 @@
 	"name": "font-awesome",
 	"displayName": "Font Awesome",
 	"description": "Copy Font awesome Icons as HTML, React, Vue, SVG, Base64, Unicode code snippet. Save icon as png or svg.",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"icon": "images/logo.png",
 	"publisher": "Thinker",
 	"license": "MIT",
@@ -47,11 +47,45 @@
 		"configuration": {
 			"title": "Font Awesome",
 			"properties": {
+				"font-awesome.settings.fillColor": {
+          "order": 1,
+          "type": "string",
+          "default": "#ffffff",
+					"required": true,
+          "description": "Set svg fill color when converting custom image to svg"
+        },
+				"font-awesome.settings.pngDimensions": {
+          "order": 2,
+          "type": "object",
+          "default": {
+            "width": 200,
+            "height": 200
+          },
+					"required": ["width", "height"],
+          "properties": {
+            "width": {
+              "type": "number",
+							"minimum": 200,
+							"maximum": 1000,
+              "description": "width of the png image"
+            },
+            "height": {
+							"type": "number",
+							"minimum": 200,
+							"maximum": 1000,
+              "description": "height of the png image"
+            }
+          },
+          "description": "Set .png image width and height to save",
+          "additionalProperties": false
+        },
 				"font-awesome.settings.customIconsFolderPath": {
+					"order": 3,
 					"type": "string",
 					"description": "Provide a Custom Icons Folder Path."
 				},
 				"font-awesome.settings.customIcons": {
+					"order": 4,
 					"type": "object",
 					"additionalProperties": true,
 					"properties": {
@@ -247,6 +281,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "14.x",
+		"@types/sharp": "^0.31.0",
 		"@types/vscode": "^1.54.0",
 		"@typescript-eslint/eslint-plugin": "^4.31.1",
 		"@typescript-eslint/parser": "^4.31.1",
@@ -255,7 +290,7 @@
 	},
 	"dependencies": {
 		"@vscode/webview-ui-toolkit": "^0.8.4",
-		"convert-svg-to-png": "^0.6.4",
-		"potrace": "^2.1.8"
+		"potrace": "^2.1.8",
+		"sharp": "^0.31.2"
 	}
 }

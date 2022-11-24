@@ -3,7 +3,8 @@ import * as vscode from 'vscode';
 import { Action, IconSets, ICONS_VIEW, WebViewAPIMessage, WebViewAPIMessagePayload } from './enum.constants.modal';
 import { getIconSets } from './utilities';
 import * as path from "path";
-const { convert } = require('convert-svg-to-png');
+import * as sharp from "sharp";
+import { Settings } from './Settings';
 
 export class IconsView implements vscode.WebviewViewProvider {
   public static readonly viewType = ICONS_VIEW;
@@ -71,7 +72,14 @@ export class IconsView implements vscode.WebviewViewProvider {
 
       // Save as .png file
       if (extension === ".png") {
-        const png = await convert(selectedIcon.svg, { width: "200px", height: "200px", fill: "#ffffff" });
+        const png = await sharp(Buffer.from(selectedIcon.svg))
+          .resize({
+            width: Settings.pngDimensions.width,
+            height: Settings.pngDimensions.height,
+            fit: 'contain'
+          })
+          .png()
+          .toBuffer();
         await vscode.workspace.fs.writeFile(savedPathUri, png);
       }
 
