@@ -1,0 +1,268 @@
+{
+	"name": "font-awesome",
+	"displayName": "Font Awesome",
+	"description": "Copy Font awesome Icons as HTML, React, Vue, SVG, Base64, Unicode code snippet. Save icon as png or svg.",
+	"version": "1.0.0",
+	"icon": "./images/logo.png",
+	"publisher": "Thinker",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/R35007/font-awesome-vscode-extension"
+	},
+	"author": {
+		"name": "Sivaraman",
+		"email": "sivaraman.muralidharan@verzion.com"
+	},
+	"keywords": [
+		"font",
+		"font awesome",
+		"font awesome icons",
+		"icons",
+		"icons library",
+		"icons collection",
+		"icon snippets",
+		"free icons",
+		"svg icons",
+		"base64 icons",
+		"unicode icons",
+		"html icons",
+		"react icons",
+		"vue icons",
+		"custom icons"
+	],
+	"engines": {
+		"vscode": "^1.54.0"
+	},
+	"categories": [
+		"Snippets",
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:font-awesome.search-icons",
+		"onView:font-awesome.icons-view"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"configuration": {
+			"title": "Font Awesome",
+			"properties": {
+				"font-awesome.settings.customIconsFolderPath": {
+					"type": "string",
+					"description": "Provide a Custom Icons Folder Path."
+				},
+				"font-awesome.settings.customIcons": {
+					"type": "object",
+					"additionalProperties": true,
+					"properties": {
+						"Custom Style": {
+							"type": "array",
+							"additionalItems": true,
+							"items": {
+								"type": "object",
+								"examples": [
+									{
+										"name": "file-arrow-down",
+										"label": "File arrow down",
+										"objectID": "i:solid:file-arrow-down",
+										"unicode": "f56d",
+										"ranking": "",
+										"family": "solid",
+										"className": "fa-solid fa-file-arrow-down",
+										"html": "<i class=\"fa-solid fa-file-arrow-down\"></i>",
+										"react": "<FontAwesomeIcon icon=\"fa-solid fa-file-arrow-down\" />",
+										"vue": "<font-awesome-icon icon=\"fa-solid fa-file-arrow-down\" />",
+										"svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 384 512\"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d=\"M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z\"/></svg>",
+										"base64": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48IS0tISBGb250IEF3ZXNvbWUgRnJlZSA2LjIuMSBieSBAZm9udGF3ZXNvbWUgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbSBMaWNlbnNlIC0gaHR0cHM6Ly9mb250YXdlc29tZS5jb20vbGljZW5zZS9mcmVlIChJY29uczogQ0MgQlkgNC4wLCBGb250czogU0lMIE9GTCAxLjEsIENvZGU6IE1JVCBMaWNlbnNlKSBDb3B5cmlnaHQgMjAyMiBGb250aWNvbnMsIEluYy4gLS0+PHBhdGggZD0iTTY0IDBDMjguNyAwIDAgMjguNyAwIDY0VjQ0OGMwIDM1LjMgMjguNyA2NCA2NCA2NEgzMjBjMzUuMyAwIDY0LTI4LjcgNjQtNjRWMTYwSDI1NmMtMTcuNyAwLTMyLTE0LjMtMzItMzJWMEg2NHpNMjU2IDBWMTI4SDM4NEwyNTYgMHpNMjE2IDIzMlYzMzQuMWwzMS0zMWM5LjQtOS40IDI0LjYtOS40IDMzLjkgMHM5LjQgMjQuNiAwIDMzLjlsLTcyIDcyYy05LjQgOS40LTI0LjYgOS40LTMzLjkgMGwtNzItNzJjLTkuNC05LjQtOS40LTI0LjYgMC0zMy45czI0LjYtOS40IDMzLjkgMGwzMSAzMVYyMzJjMC0xMy4zIDEwLjctMjQgMjQtMjRzMjQgMTAuNyAyNCAyNHoiLz48L3N2Zz4=",
+										"categories": [
+											"files"
+										],
+										"keywords": [
+											"filearrowdown",
+											"solid",
+											"f56d",
+											"fasolidfafilearrowdown",
+											"i:solid:filearrowdown",
+											"filedownload",
+											"files",
+											"document",
+											"export",
+											"save"
+										]
+									}
+								],
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"label": {
+										"type": "string"
+									},
+									"objectID": {
+										"type": "string"
+									},
+									"unicode": {
+										"type": "string"
+									},
+									"ranking": {
+										"type": "integer"
+									},
+									"family": {
+										"type": "string"
+									},
+									"className": {
+										"type": "string"
+									},
+									"html": {
+										"type": "string"
+									},
+									"react": {
+										"type": "string"
+									},
+									"vue": {
+										"type": "string"
+									},
+									"svg": {
+										"type": "string"
+									},
+									"base64": {
+										"type": "string"
+									},
+									"categories": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"keywords": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									}
+								},
+								"required": [
+									"name",
+									"label",
+									"family",
+									"svg"
+								]
+							}
+						}
+					},
+					"description": "Provide a Custom Icons object that contains list of icon details"
+				}
+			}
+		},
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "icons-view",
+					"title": "Font Awesome",
+					"icon": "images/logo.svg"
+				}
+			]
+		},
+		"views": {
+			"icons-view": [
+				{
+					"type": "webview",
+					"id": "font-awesome.icons-view",
+					"name": "Font Awesome"
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "font-awesome.refreshView",
+				"title": "Refresh",
+				"icon": "$(refresh)"
+			},
+			{
+				"command": "font-awesome.download",
+				"title": "Download Icon Archive",
+				"icon": "$(arrow-down)"
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "font-awesome.refreshView",
+					"group": "navigation",
+					"when": "view == font-awesome.icons-view"
+				},
+				{
+					"command": "font-awesome.download",
+					"group": "navigation",
+					"when": "view == font-awesome.icons-view"
+				}
+			]
+		},
+		"snippets": [
+			{
+				"language": "javascript",
+				"path": "./snippets/fa-icons-snippets.json"
+			},
+			{
+				"language": "javascriptreact",
+				"path": "./snippets/fa-icons-snippets.json"
+			},
+			{
+				"language": "typescript",
+				"path": "./snippets/fa-icons-snippets.json"
+			},
+			{
+				"language": "typescriptreact",
+				"path": "./snippets/fa-icons-snippets.json"
+			},
+			{
+				"language": "xml",
+				"path": "./snippets/fa-icons-snippets.json"
+			},
+			{
+				"language": "html",
+				"path": "./snippets/fa-icons-snippets.json"
+			},
+			{
+				"language": "scss",
+				"path": "./snippets/fa-icons-snippets.json"
+			},
+			{
+				"language": "css",
+				"path": "./snippets/fa-icons-snippets.json"
+			},
+			{
+				"language": "less",
+				"path": "./snippets/fa-icons-snippets.json"
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"lint": "eslint src --ext ts",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.4",
+		"@types/lodash": "^4.14.176",
+		"@types/mocha": "^9.0.0",
+		"@types/node": "14.x",
+		"@types/vscode": "^1.54.0",
+		"@typescript-eslint/eslint-plugin": "^4.31.1",
+		"@typescript-eslint/parser": "^4.31.1",
+		"@vscode/test-electron": "^1.6.2",
+		"eslint": "^7.32.0",
+		"glob": "^7.1.7",
+		"mocha": "^9.1.1",
+		"typescript": "^4.4.3"
+	},
+	"dependencies": {
+		"@vscode/webview-ui-toolkit": "^0.8.4",
+		"convert-svg-to-png": "^0.6.4",
+		"lodash": "^4.17.21",
+		"potrace": "^2.1.8"
+	}
+}
