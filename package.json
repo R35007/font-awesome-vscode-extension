@@ -3,7 +3,7 @@
 	"displayName": "Font Awesome",
 	"description": "Copy Font awesome Icons as HTML, React, Vue, SVG, Base64, Unicode code snippet. Save icon as png or svg.",
 	"version": "1.0.0",
-	"icon": "./images/logo.png",
+	"icon": "images/logo.png",
 	"publisher": "Thinker",
 	"license": "MIT",
 	"repository": {
@@ -246,23 +246,16 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
-		"@types/glob": "^7.1.4",
-		"@types/lodash": "^4.14.176",
-		"@types/mocha": "^9.0.0",
 		"@types/node": "14.x",
 		"@types/vscode": "^1.54.0",
 		"@typescript-eslint/eslint-plugin": "^4.31.1",
 		"@typescript-eslint/parser": "^4.31.1",
-		"@vscode/test-electron": "^1.6.2",
 		"eslint": "^7.32.0",
-		"glob": "^7.1.7",
-		"mocha": "^9.1.1",
 		"typescript": "^4.4.3"
 	},
 	"dependencies": {
 		"@vscode/webview-ui-toolkit": "^0.8.4",
 		"convert-svg-to-png": "^0.6.4",
-		"lodash": "^4.17.21",
 		"potrace": "^2.1.8"
 	}
 }

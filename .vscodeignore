@@ -9,5 +9,6 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 **/*.scss
+**/*.css.map
 images/demos/**
 extension-packages/**
