@@ -1,3 +1,7 @@
+## v1.1.1
+
+- Styling issue fix
+
 ## v1.1.0
 
 - Reduced Bundle size

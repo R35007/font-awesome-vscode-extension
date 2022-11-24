@@ -96,7 +96,6 @@ ul.icons-list {
     border-radius: 3px;
     border: 1px solid #ffffff1a;
     align-items: center;
-    justify-content: center;
     transition: all 0.2s ease-in;
     background: var(--vscode-menu-background);
     color: var(--vscode-menu-foreground);
@@ -128,6 +127,7 @@ ul.icons-list {
       margin-right: 10px;
       text-align: left;
       transition: all 0.2s ease-in;
+      white-space: nowrap;
     }
   }
 }
