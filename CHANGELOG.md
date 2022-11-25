@@ -1,3 +1,8 @@
+## v2.0.0
+
+- Fix - When icon is saved as png, clipping an image issue fixed.
+- Added `font-awesome.settings.pngIconColor` settings. Helps to pik a color for an icon to save as png.
+
 ## v1.1.1
 
 - Styling issue fix

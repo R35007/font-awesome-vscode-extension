@@ -22,4 +22,7 @@ export class Settings {
   static get fillColor() {
     return Settings.getSettings('fillColor') as string;
   }
+  static get pngIconColor() {
+    return Settings.getSettings('pngIconColor') as string;
+  }
 }

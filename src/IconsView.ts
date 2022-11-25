@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { TextEncoder } from 'util';
 import * as vscode from 'vscode';
 import { Action, IconSets, ICONS_VIEW, WebViewAPIMessage, WebViewAPIMessagePayload } from './enum.constants.modal';
@@ -61,35 +62,56 @@ export class IconsView implements vscode.WebviewViewProvider {
   }
 
   private async saveIcon({ selectedIcon }: WebViewAPIMessagePayload) {
+
     const savedPathUri = await vscode.window.showSaveDialog({
       defaultUri: vscode.Uri.parse(`./${selectedIcon.name}`),
       filters: { 'Vector': ["svg"], 'Image': ['png'] },
       title: `Save ${selectedIcon.label} (${selectedIcon.name}) icon`,
     });
 
-    if (savedPathUri) {
-      const extension = path.extname(savedPathUri.fsPath);
+    if (!savedPathUri) return;
 
-      // Save as .png file
-      if (extension === ".png") {
-        const png = await sharp(Buffer.from(selectedIcon.svg))
-          .resize({
-            width: Settings.pngDimensions.width,
-            height: Settings.pngDimensions.height,
-            fit: 'contain'
-          })
-          .png()
-          .toBuffer();
-        await vscode.workspace.fs.writeFile(savedPathUri, png);
+    const extension = path.extname(savedPathUri.fsPath);
+
+    // Save as .png file
+    if (extension === ".png") {
+
+      let iconColor: string | undefined = Settings.pngIconColor;
+
+      if (Settings.pngIconColor === 'Prompt') {
+        iconColor = await vscode.window.showQuickPick(["Black", "Gray", "White"], {
+          title: "Icon Color",
+          placeHolder: "Pick a icon color to save",
+        });
       }
 
-      // Save as .svg file
-      if (extension === ".svg") {
-        await vscode.workspace.fs.writeFile(savedPathUri, new TextEncoder().encode(selectedIcon.svg));
-      }
+      if (!iconColor) return;
 
-      await vscode.commands.executeCommand("vscode.open", savedPathUri);
+      const color: any = {
+        "Black": -100,
+        "White": 100,
+        "Gray": 50,
+      };
+
+      const png = await sharp(Buffer.from(selectedIcon.svg))
+        .resize({
+          width: Settings.pngDimensions.width,
+          height: Settings.pngDimensions.height,
+          fit: 'inside'
+        })
+        .modulate({ lightness: color[iconColor] })
+        .png()
+        .toBuffer();
+
+      await vscode.workspace.fs.writeFile(savedPathUri, png);
     }
+
+    // Save as .svg file
+    if (extension === ".svg") {
+      await vscode.workspace.fs.writeFile(savedPathUri, new TextEncoder().encode(selectedIcon.svg));
+    }
+
+    await vscode.commands.executeCommand("vscode.open", savedPathUri);
   }
 
   public async refreshView() {

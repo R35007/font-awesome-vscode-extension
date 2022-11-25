@@ -158,7 +158,7 @@ ul.icons-list {
       height: 80% !important;
     }
 
-    &:hover{
+    &:hover {
       background: var(--vscode-menu-background);
       fill: var(--vscode-menu-foreground);
     }
@@ -177,12 +177,6 @@ ul.icons-list {
 
     vscode-panel-tab[aria-selected="true"] {
       border-bottom: 1px solid;
-    }
-
-    vscode-panel-view {
-      vscode-button::part(control) {
-        padding: 2px 9px;
-      }
     }
   }
 
@@ -248,5 +242,4 @@ ul.icons-list {
     border: none !important;
     outline: none !important;
   }
-
 }

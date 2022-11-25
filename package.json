@@ -2,7 +2,7 @@
 	"name": "font-awesome",
 	"displayName": "Font Awesome",
 	"description": "Copy Font awesome Icons as HTML, React, Vue, SVG, Base64, Unicode code snippet. Save icon as png or svg.",
-	"version": "1.1.1",
+	"version": "2.0.0",
 	"icon": "images/logo.png",
 	"publisher": "Thinker",
 	"license": "MIT",
@@ -47,6 +47,24 @@
 		"configuration": {
 			"title": "Font Awesome",
 			"properties": {
+				"font-awesome.settings.pngIconColor": {
+          "order": 1,
+          "type": "string",
+          "default": "Black",
+					"enum": [
+						"Black",
+						"Gray",
+						"White",
+						"Prompt"
+					],	
+					"enumDescriptions": [
+						"Save Icon in black color by default",
+						"Save Icon in gray color by default",
+						"Save Icon in white color by default",
+						"Prompt option on each save"
+					],				
+          "description": "Set icon color for saving icon as png"
+        },
 				"font-awesome.settings.fillColor": {
           "order": 1,
           "type": "string",

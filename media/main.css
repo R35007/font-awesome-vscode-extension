@@ -167,9 +167,6 @@ ul.icons-list li.icon-item .icon-name {
 .info-container .detail-container vscode-panel-tab[aria-selected=true] {
   border-bottom: 1px solid;
 }
-.info-container .detail-container vscode-panel-view vscode-button::part(control) {
-  padding: 2px 9px;
-}
 .info-container vscode-badge::part(control) {
   background: var(--vscode-button-secondaryBackground);
   color: var(--vscode-button-secondaryForeground);
@@ -225,4 +222,4 @@ ul.icons-list li.icon-item .icon-name {
     border: none !important;
     outline: none !important;
   }
-}/*# sourceMappingURL=main.css.map */
+}
