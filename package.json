@@ -2,7 +2,7 @@
 	"name": "font-awesome",
 	"displayName": "Font Awesome",
 	"description": "Copy Font awesome Icons as HTML, React, Vue, SVG, Base64, Unicode code snippet. Save icon as png or svg.",
-	"version": "2.0.0",
+	"version": "3.0.0",
 	"icon": "images/logo.png",
 	"publisher": "Thinker",
 	"license": "MIT",
