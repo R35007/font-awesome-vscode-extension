@@ -1,3 +1,8 @@
+## v3.1.0
+
+- Removed - Load more button and add icons automatically on scroll
+- Fixed - Styling issue
+
 ## v3.0.0
 
 - Added - sort by `Featured` and `Alphabetical`.

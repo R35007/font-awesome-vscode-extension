@@ -172,7 +172,7 @@ export class IconsView implements vscode.WebviewViewProvider {
 
     const iconSize = this._storage.getValue("iconSize", this.defaultViewState.iconSize);
     const zoom = this._storage.getValue("zoom", this.defaultViewState.zoom);
-    
+
     const searchText = this._storage.getValue("searchText", this.defaultViewState.searchText);
     const selectedIcon = this._storage.getValue("selectedIcon", this.defaultViewState.selectedIcon);
 
@@ -209,6 +209,7 @@ export class IconsView implements vscode.WebviewViewProvider {
     );
 
     const {
+      showIconName,
       showIconInfo,
       showCategoryBadge,
       iconFamily,
@@ -307,17 +308,14 @@ export class IconsView implements vscode.WebviewViewProvider {
                 <vscode-text-field id="search-icon-textbox" value="${searchText}" placeholder="Search Icons" class="w-100"></vscode-text-field>
                 <span id="total-icons"></span>
               </div>
-              <div title="Toggle View">
-                <vscode-button id="view-toggle-btn" data-current-view="${viewType}" title="Toggle View">
-                  ${viewTypeIcon}
-                </vscode-button>
-              </div>
+              <vscode-button id="view-toggle-btn" data-current-view="${viewType}" title="Toggle View" style="display: ${showIconName ? "block" : "none"}">
+                ${viewTypeIcon}
+              </vscode-button>
             </div>
         </div>
         <ul id="icons-list" class="icons-list">
         </ul>
         <footer style="margin: 1rem">
-          <vscode-button id="load-more-btn" style="margin-bottom: 5px; display: block; text-align: center; border-radius: 2px;" title="Load more icons">Load more...</vscode-button>
           <div> 
             Please click <a href="https://fontawesome.com/search?m=free&o=r">here</a> to search for more icons
           </div>

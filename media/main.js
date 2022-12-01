@@ -40,15 +40,12 @@ function init(iconsList, viewState) {
     const $iconsList = document.getElementById("icons-list"); // ul
     let $iconsItem = $iconsList.querySelectorAll(".icon-item"); // li
 
-    const $loadMoreBtn = document.getElementById("load-more-btn");
-
-
     let searchText = viewState.searchText;
     let iconSize = viewState.iconSize + "px";
 
     let iconFamily = viewState.iconFamily;
     let iconCategory = viewState.iconCategory;
-    
+
     let copyType = viewState.copyType;
     let sortType = viewState.sortType;
     let viewType = viewState.viewType;
@@ -59,7 +56,7 @@ function init(iconsList, viewState) {
 
     let icons = iconsList;
     let iconChunks = [];
-    const chunkLength = 180;
+    const chunkLength = 100;
 
 
 
@@ -338,6 +335,23 @@ function init(iconsList, viewState) {
         });
     };
 
+    const loadMoreIcons = () => {
+        const lastIconObserver = new IntersectionObserver(entries => {
+            const lastIcon = entries[0];
+            if (!lastIcon.isIntersecting) return;
+            
+            if (!iconChunks.length) return lastIconObserver.unobserve(lastIcon.target);
+            const iconItemsList = getIconItemsList(iconChunks.shift());
+            $iconsList.insertAdjacentHTML('beforeend', iconItemsList.join(""));
+
+            addOnIconClickListener();
+            lastIconObserver.unobserve(lastIcon.target);
+            lastIconObserver.observe(document.querySelector(".icon-item:last-child"));
+        });
+
+        lastIconObserver.observe(document.querySelector(".icon-item:last-child"));
+    };
+
     const generateIconItems = () => {
 
         const filteredIcons = getFilteredIcons(icons);
@@ -350,9 +364,8 @@ function init(iconsList, viewState) {
 
         $iconsList.style = getUlStyle();
         $iconsList.innerHTML = iconItemsList.join('') || "";
-        $loadMoreBtn.style.display = iconChunks.length ? "block" : "none";
-
         addOnIconClickListener();
+        loadMoreIcons();
     };
 
     // Handle messages sent from the extension to the webview
@@ -456,16 +469,6 @@ function init(iconsList, viewState) {
             case View.Compact:
                 setCheatSheetStaggeredView();
                 break;
-        }
-    });
-
-    // On Load more button click
-    $loadMoreBtn.addEventListener("click", function () {
-        if (iconChunks.length) {
-            const iconItemsList = getIconItemsList(iconChunks.shift());
-            $iconsList.insertAdjacentHTML('beforeend', iconItemsList.join(""));
-            $loadMoreBtn.style.display = iconChunks.length ? "block" : "none";
-            addOnIconClickListener();
         }
     });
 
