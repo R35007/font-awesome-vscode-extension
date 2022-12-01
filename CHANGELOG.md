@@ -1,3 +1,16 @@
+## v3.0.0
+
+- Added - sort by `Featured` and `Alphabetical`.
+- Added - Toggle icon list view.
+- Added - Added category dropdown.
+- Added - Show or Hide `Icon Name`, `Icon Snippet Tab`, `Icon Category Badges`
+- Added - Added Lay loading. Loads 180 icons at start and click `Load more` button to load more icon.
+- Added - Download Icon Archive.
+- Updated - Add custom icons.
+- Updated - Maintain view state.
+- Updated - Save icon as png in three different colors. `Black`, `Gray`, `White`.
+
+
 ## v2.0.0
 
 - Fix - When icon is saved as png, clipping an image issue fixed.

@@ -85,7 +85,7 @@ ul.icons-list {
   display: flex;
   flex-wrap: wrap;
   padding: 0;
-  margin: 0 10px;
+  margin: 0 1rem;
   justify-content: space-around;
   gap: 0.5rem;
 
@@ -115,7 +115,6 @@ ul.icons-list {
     }
 
     .icon {
-      aspect-ratio: 1;
       padding: 5px;
       box-sizing: border-box;
       fill: var(--vscode-menu-foreground);
@@ -127,7 +126,6 @@ ul.icons-list {
       margin-right: 10px;
       text-align: left;
       transition: all 0.2s ease-in;
-      white-space: nowrap;
     }
   }
 }
@@ -142,9 +140,10 @@ ul.icons-list {
   #selected-icon-image {
     fill: var(--vscode-foreground);
     width: 5rem;
+    height: 5rem;
     padding: 6px;
-    box-sizing: border-box;
     min-width: 3rem;
+    box-sizing: border-box;
     border-radius: 4px;
     text-align: center;
     cursor: pointer;
@@ -152,6 +151,11 @@ ul.icons-list {
     display: flex;
     align-items: center;
     justify-content: center;
+
+
+    @media (max-width: 500px) {
+      display: none;
+    }
 
     svg {
       width: 80% !important;
@@ -167,6 +171,7 @@ ul.icons-list {
   .detail-container {
     vscode-text-area::part(control) {
       height: 100%;
+      overflow-x: hidden;
     }
 
     vscode-panels::part(tablist) {
@@ -177,6 +182,17 @@ ul.icons-list {
 
     vscode-panel-tab[aria-selected="true"] {
       border-bottom: 1px solid;
+    }
+  }
+
+  #selected-icon-name {
+    color: var(--vscode-foreground);
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--vscode-textLink-foreground);
+      text-decoration: underline;
     }
   }
 
@@ -204,6 +220,18 @@ ul.icons-list {
   padding-right: 30px;
 }
 
+.search-container {
+  vscode-button#view-toggle-btn {
+    &::part(control) {
+      padding: 3.6px 8px;
+    }
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+}
 
 /* Slider Style */
 @media screen and (-webkit-min-device-pixel-ratio:0) {

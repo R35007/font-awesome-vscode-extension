@@ -39,8 +39,12 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:font-awesome.search-icons",
-		"onView:font-awesome.icons-view"
+		"onCommand:font-awesome.copyAs",
+		"onCommand:font-awesome.download",
+		"onCommand:font-awesome.saveIcon",
+		"onCommand:font-awesome.refreshView",
+		"onView:font-awesome.icons-view",
+		"onStartupFinished"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -48,159 +52,163 @@
 			"title": "Font Awesome",
 			"properties": {
 				"font-awesome.settings.pngIconColor": {
-          "order": 1,
-          "type": "string",
-          "default": "Black",
+					"order": 1,
+					"type": "string",
+					"default": "Prompt",
 					"enum": [
+						"Prompt",
 						"Black",
 						"Gray",
-						"White",
-						"Prompt"
-					],	
+						"White"
+					],
 					"enumDescriptions": [
 						"Save Icon in black color by default",
 						"Save Icon in gray color by default",
 						"Save Icon in white color by default",
 						"Prompt option on each save"
-					],				
-          "description": "Set icon color for saving icon as png"
-        },
+					],
+					"description": "Set icon color for saving icon as png"
+				},
 				"font-awesome.settings.fillColor": {
-          "order": 1,
-          "type": "string",
-          "default": "#ffffff",
+					"order": 1,
+					"type": "string",
+					"default": "#ffffff",
 					"required": true,
-          "description": "Set svg fill color when converting custom image to svg"
-        },
+					"description": "Set svg fill color when converting custom image to svg"
+				},
 				"font-awesome.settings.pngDimensions": {
-          "order": 2,
-          "type": "object",
-          "default": {
-            "width": 200,
-            "height": 200
-          },
-					"required": ["width", "height"],
-          "properties": {
-            "width": {
-              "type": "number",
-							"minimum": 200,
-							"maximum": 1000,
-              "description": "width of the png image"
-            },
-            "height": {
+					"order": 2,
+					"type": "object",
+					"default": {
+						"width": 200,
+						"height": 200
+					},
+					"required": [
+						"width",
+						"height"
+					],
+					"properties": {
+						"width": {
 							"type": "number",
 							"minimum": 200,
 							"maximum": 1000,
-              "description": "height of the png image"
-            }
-          },
-          "description": "Set .png image width and height to save",
-          "additionalProperties": false
-        },
-				"font-awesome.settings.customIconsFolderPath": {
+							"description": "width of the png image"
+						},
+						"height": {
+							"type": "number",
+							"minimum": 200,
+							"maximum": 1000,
+							"description": "height of the png image"
+						}
+					},
+					"description": "Set .png image width and height to save",
+					"additionalProperties": false
+				},
+				"font-awesome.settings.customIconsArchivePath": {
 					"order": 3,
+					"type": "string",
+					"description": "Provide a .json file path to Custom Icons"
+				},
+				"font-awesome.settings.customIconsFolderPath": {
+					"order": 4,
 					"type": "string",
 					"description": "Provide a Custom Icons Folder Path."
 				},
 				"font-awesome.settings.customIcons": {
-					"order": 4,
-					"type": "object",
-					"additionalProperties": true,
-					"properties": {
-						"Custom Style": {
-							"type": "array",
-							"additionalItems": true,
-							"items": {
-								"type": "object",
-								"examples": [
-									{
-										"name": "file-arrow-down",
-										"label": "File arrow down",
-										"objectID": "i:solid:file-arrow-down",
-										"unicode": "f56d",
-										"ranking": "",
-										"family": "solid",
-										"className": "fa-solid fa-file-arrow-down",
-										"html": "<i class=\"fa-solid fa-file-arrow-down\"></i>",
-										"react": "<FontAwesomeIcon icon=\"fa-solid fa-file-arrow-down\" />",
-										"vue": "<font-awesome-icon icon=\"fa-solid fa-file-arrow-down\" />",
-										"svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 384 512\"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d=\"M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z\"/></svg>",
-										"base64": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48IS0tISBGb250IEF3ZXNvbWUgRnJlZSA2LjIuMSBieSBAZm9udGF3ZXNvbWUgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbSBMaWNlbnNlIC0gaHR0cHM6Ly9mb250YXdlc29tZS5jb20vbGljZW5zZS9mcmVlIChJY29uczogQ0MgQlkgNC4wLCBGb250czogU0lMIE9GTCAxLjEsIENvZGU6IE1JVCBMaWNlbnNlKSBDb3B5cmlnaHQgMjAyMiBGb250aWNvbnMsIEluYy4gLS0+PHBhdGggZD0iTTY0IDBDMjguNyAwIDAgMjguNyAwIDY0VjQ0OGMwIDM1LjMgMjguNyA2NCA2NCA2NEgzMjBjMzUuMyAwIDY0LTI4LjcgNjQtNjRWMTYwSDI1NmMtMTcuNyAwLTMyLTE0LjMtMzItMzJWMEg2NHpNMjU2IDBWMTI4SDM4NEwyNTYgMHpNMjE2IDIzMlYzMzQuMWwzMS0zMWM5LjQtOS40IDI0LjYtOS40IDMzLjkgMHM5LjQgMjQuNiAwIDMzLjlsLTcyIDcyYy05LjQgOS40LTI0LjYgOS40LTMzLjkgMGwtNzItNzJjLTkuNC05LjQtOS40LTI0LjYgMC0zMy45czI0LjYtOS40IDMzLjkgMGwzMSAzMVYyMzJjMC0xMy4zIDEwLjctMjQgMjQtMjRzMjQgMTAuNyAyNCAyNHoiLz48L3N2Zz4=",
-										"categories": [
-											"files"
-										],
-										"keywords": [
-											"filearrowdown",
-											"solid",
-											"f56d",
-											"fasolidfafilearrowdown",
-											"i:solid:filearrowdown",
-											"filedownload",
-											"files",
-											"document",
-											"export",
-											"save"
-										]
-									}
+					"order": 5,
+					"type": "array",
+					"additionalItems": true,
+					"items": {
+						"type": "object",
+						"examples": [
+							{
+								"name": "file-arrow-down",
+								"label": "File arrow down",
+								"objectID": "i:solid:file-arrow-down",
+								"unicode": "f56d",
+								"ranking": "",
+								"family": "solid",
+								"class": "fa-solid fa-file-arrow-down",
+								"html": "<i class=\"fa-solid fa-file-arrow-down\"></i>",
+								"react": "<FontAwesomeIcon icon=\"fa-solid fa-file-arrow-down\" />",
+								"vue": "<font-awesome-icon icon=\"fa-solid fa-file-arrow-down\" />",
+								"svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 384 512\"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d=\"M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z\"/></svg>",
+								"base64": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48IS0tISBGb250IEF3ZXNvbWUgRnJlZSA2LjIuMSBieSBAZm9udGF3ZXNvbWUgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbSBMaWNlbnNlIC0gaHR0cHM6Ly9mb250YXdlc29tZS5jb20vbGljZW5zZS9mcmVlIChJY29uczogQ0MgQlkgNC4wLCBGb250czogU0lMIE9GTCAxLjEsIENvZGU6IE1JVCBMaWNlbnNlKSBDb3B5cmlnaHQgMjAyMiBGb250aWNvbnMsIEluYy4gLS0+PHBhdGggZD0iTTY0IDBDMjguNyAwIDAgMjguNyAwIDY0VjQ0OGMwIDM1LjMgMjguNyA2NCA2NCA2NEgzMjBjMzUuMyAwIDY0LTI4LjcgNjQtNjRWMTYwSDI1NmMtMTcuNyAwLTMyLTE0LjMtMzItMzJWMEg2NHpNMjU2IDBWMTI4SDM4NEwyNTYgMHpNMjE2IDIzMlYzMzQuMWwzMS0zMWM5LjQtOS40IDI0LjYtOS40IDMzLjkgMHM5LjQgMjQuNiAwIDMzLjlsLTcyIDcyYy05LjQgOS40LTI0LjYgOS40LTMzLjkgMGwtNzItNzJjLTkuNC05LjQtOS40LTI0LjYgMC0zMy45czI0LjYtOS40IDMzLjkgMGwzMSAzMVYyMzJjMC0xMy4zIDEwLjctMjQgMjQtMjRzMjQgMTAuNyAyNCAyNHoiLz48L3N2Zz4=",
+								"categories": [
+									"files"
 								],
-								"properties": {
-									"name": {
-										"type": "string"
-									},
-									"label": {
-										"type": "string"
-									},
-									"objectID": {
-										"type": "string"
-									},
-									"unicode": {
-										"type": "string"
-									},
-									"ranking": {
-										"type": "integer"
-									},
-									"family": {
-										"type": "string"
-									},
-									"className": {
-										"type": "string"
-									},
-									"html": {
-										"type": "string"
-									},
-									"react": {
-										"type": "string"
-									},
-									"vue": {
-										"type": "string"
-									},
-									"svg": {
-										"type": "string"
-									},
-									"base64": {
-										"type": "string"
-									},
-									"categories": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									},
-									"keywords": {
-										"type": "array",
-										"items": {
-											"type": "string"
-										}
-									}
-								},
-								"required": [
-									"name",
-									"label",
-									"family",
-									"svg"
+								"keywords": [
+									"filearrowdown",
+									"solid",
+									"f56d",
+									"fasolidfafilearrowdown",
+									"i:solid:filearrowdown",
+									"filedownload",
+									"files",
+									"document",
+									"export",
+									"save"
 								]
 							}
-						}
+						],
+						"properties": {
+							"name": {
+								"type": "string"
+							},
+							"label": {
+								"type": "string"
+							},
+							"objectID": {
+								"type": "string"
+							},
+							"unicode": {
+								"type": "string"
+							},
+							"ranking": {
+								"type": "integer"
+							},
+							"family": {
+								"type": "string"
+							},
+							"class": {
+								"type": "string"
+							},
+							"html": {
+								"type": "string"
+							},
+							"react": {
+								"type": "string"
+							},
+							"vue": {
+								"type": "string"
+							},
+							"svg": {
+								"type": "string"
+							},
+							"base64": {
+								"type": "string"
+							},
+							"categories": {
+								"type": "array",
+								"minimum": 1,
+								"items": {
+									"type": "string"
+								}
+							},
+							"keywords": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							}
+						},
+						"required": [
+							"name",
+							"label",
+							"family",
+							"categories",
+							"svg"
+						]
 					},
 					"description": "Provide a Custom Icons object that contains list of icon details"
 				}
@@ -220,36 +228,196 @@
 				{
 					"type": "webview",
 					"id": "font-awesome.icons-view",
-					"name": "Font Awesome"
+					"name": "Font Awesome",
+					"icon": "images/logo.svg",
+					"contextualTitle": "Font Awesome"
 				}
 			]
 		},
 		"commands": [
 			{
-				"command": "font-awesome.refreshView",
-				"title": "Refresh",
-				"icon": "$(refresh)"
+				"command": "font-awesome.copyAs",
+				"title": "Set Icon Copy Type",
+				"category": "Font Awesome"
 			},
 			{
 				"command": "font-awesome.download",
 				"title": "Download Icon Archive",
-				"icon": "$(arrow-down)"
+				"category": "Font Awesome"
+			},
+			{
+				"command": "font-awesome.saveIcon",
+				"title": "Save Icon",
+				"icon": "$(save)",
+				"category": "Font Awesome"
+			},
+			{
+				"command": "font-awesome.refreshView",
+				"title": "Refresh",
+				"icon": "$(refresh)",
+				"category": "Font Awesome"
+			},
+			{
+				"command": "font-awesome.showIconName",
+				"title": "⠀⠀Icon Name"
+			},
+			{
+				"command": "font-awesome.hideIconName",
+				"title": "✓⠀Icon Name"
+			},
+			{
+				"command": "font-awesome.showIconInfo",
+				"title": "⠀⠀Icon Snippet Tab"
+			},
+			{
+				"command": "font-awesome.hideIconInfo",
+				"title": "✓⠀Icon Snippet Tab"
+			},
+			{
+				"command": "font-awesome.showCategoryBadge",
+				"title": "⠀⠀Category Badge"
+			},
+			{
+				"command": "font-awesome.hideCategoryBadge",
+				"title": "✓⠀Category Badge"
+			},
+			{
+				"command": "font-awesome.showSortByFeature",
+				"title": "⠀⠀Feature"
+			},
+			{
+				"command": "font-awesome.hideSortByFeature",
+				"title": "✓⠀Feature"
+			},
+			{
+				"command": "font-awesome.showSortByAlphabetical",
+				"title": "⠀⠀Alphabetical"
+			},
+			{
+				"command": "font-awesome.hideSortByAlphabetical",
+				"title": "✓⠀Alphabetical"
 			}
 		],
 		"menus": {
+			"commandPalette": [
+				{
+					"command": "font-awesome.showIconName",
+					"when": "false"
+				},
+				{
+					"command": "font-awesome.hideIconName",
+					"when": "false"
+				},
+				{
+					"command": "font-awesome.showIconInfo",
+					"when": "false"
+				},
+				{
+					"command": "font-awesome.hideIconInfo",
+					"when": "false"
+				},
+				{
+					"command": "font-awesome.showCategoryBadge",
+					"when": "false"
+				},
+				{
+					"command": "font-awesome.hideCategoryBadge",
+					"when": "false"
+				},
+				{
+					"command": "font-awesome.showSortByFeature",
+					"when": "false"
+				},
+				{
+					"command": "font-awesome.hideSortByFeature",
+					"when": "false"
+				},
+				{
+					"command": "font-awesome.showSortByAlphabetical",
+					"when": "false"
+				},
+				{
+					"command": "font-awesome.hideSortByAlphabetical",
+					"when": "false"
+				}
+			],
 			"view/title": [
 				{
-					"command": "font-awesome.refreshView",
-					"group": "navigation",
+					"command": "font-awesome.saveIcon",
+					"group": "navigation@1",
 					"when": "view == font-awesome.icons-view"
 				},
 				{
-					"command": "font-awesome.download",
-					"group": "navigation",
+					"command": "font-awesome.refreshView",
+					"group": "navigation@2",
 					"when": "view == font-awesome.icons-view"
+				},
+				{
+					"command": "font-awesome.showIconName",
+					"when": "view == font-awesome.icons-view && !showIconName",
+					"group": "a@1"
+				},
+				{
+					"command": "font-awesome.hideIconName",
+					"when": "view == font-awesome.icons-view && showIconName",
+					"group": "a@1"
+				},
+				{
+					"command": "font-awesome.showIconInfo",
+					"when": "view == font-awesome.icons-view && !showIconInfo",
+					"group": "a@2"
+				},
+				{
+					"command": "font-awesome.hideIconInfo",
+					"when": "view == font-awesome.icons-view && showIconInfo",
+					"group": "a@2"
+				},
+				{
+					"command": "font-awesome.showCategoryBadge",
+					"when": "view == font-awesome.icons-view && !showCategoryBadge",
+					"group": "a@3"
+				},
+				{
+					"command": "font-awesome.hideCategoryBadge",
+					"when": "view == font-awesome.icons-view && showCategoryBadge",
+					"group": "a@3"
+				},
+				{
+					"submenu": "font-awesome.sort",
+					"group": "b@1"
+				}
+			],
+			"font-awesome.sort": [
+				{
+					"command": "font-awesome.showSortByFeature",
+					"when": "view == font-awesome.icons-view && !sortByFeature",
+					"group": "b@1"
+				},
+				{
+					"command": "font-awesome.hideSortByFeature",
+					"when": "view == font-awesome.icons-view && sortByFeature",
+					"group": "b@1"
+				},
+				{
+					"command": "font-awesome.showSortByAlphabetical",
+					"when": "view == font-awesome.icons-view && sortByFeature",
+					"group": "b@2"
+				},
+				{
+					"command": "font-awesome.hideSortByAlphabetical",
+					"when": "view == font-awesome.icons-view && !sortByFeature",
+					"group": "b@2"
 				}
 			]
 		},
+		"submenus": [
+			{
+				"id": "font-awesome.sort",
+				"label": "Sort",
+				"group": "b@1",
+				"icon": "$(something)"
+			}
+		],
 		"snippets": [
 			{
 				"language": "javascript",

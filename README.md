@@ -16,8 +16,13 @@ Copy Font awesome Icons as `HTML`, `React`, `Vue`, `SVG`, `Base64`, `Unicode` co
 - Type `fa-` and press `Ctrl+Space` to show list of font awesome icon code snippets.
 
 ## Demo
+Copy Icon
 
 <img src="./images/demo.gif" width="100%" style="max-width: 1300px">
+
+Toggle View
+
+<img src="./images/view-demo.gif" width="100%" style="max-width: 1300px">
 
 ## Author
 

@@ -85,7 +85,7 @@ ul.icons-list {
   display: flex;
   flex-wrap: wrap;
   padding: 0;
-  margin: 0 10px;
+  margin: 0 1rem;
   justify-content: space-around;
   gap: 0.5rem;
 }
@@ -111,7 +111,6 @@ ul.icons-list li.icon-item:hover .icon-name, ul.icons-list li.icon-item.selected
   color: var(--vscode-menu-selectionForeground) !important;
 }
 ul.icons-list li.icon-item .icon {
-  aspect-ratio: 1;
   padding: 5px;
   box-sizing: border-box;
   fill: var(--vscode-menu-foreground);
@@ -122,7 +121,6 @@ ul.icons-list li.icon-item .icon-name {
   margin-right: 10px;
   text-align: left;
   transition: all 0.2s ease-in;
-  white-space: nowrap;
 }
 
 .info-container {
@@ -136,9 +134,10 @@ ul.icons-list li.icon-item .icon-name {
 .info-container #selected-icon-image {
   fill: var(--vscode-foreground);
   width: 5rem;
+  height: 5rem;
   padding: 6px;
-  box-sizing: border-box;
   min-width: 3rem;
+  box-sizing: border-box;
   border-radius: 4px;
   text-align: center;
   cursor: pointer;
@@ -146,6 +145,11 @@ ul.icons-list li.icon-item .icon-name {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+@media (max-width: 500px) {
+  .info-container #selected-icon-image {
+    display: none;
+  }
 }
 .info-container #selected-icon-image svg {
   width: 80% !important;
@@ -157,6 +161,7 @@ ul.icons-list li.icon-item .icon-name {
 }
 .info-container .detail-container vscode-text-area::part(control) {
   height: 100%;
+  overflow-x: hidden;
 }
 .info-container .detail-container vscode-panels::part(tablist) {
   padding: 0;
@@ -166,6 +171,15 @@ ul.icons-list li.icon-item .icon-name {
 }
 .info-container .detail-container vscode-panel-tab[aria-selected=true] {
   border-bottom: 1px solid;
+}
+.info-container #selected-icon-name {
+  color: var(--vscode-foreground);
+  text-decoration: none;
+  cursor: pointer;
+}
+.info-container #selected-icon-name:hover {
+  color: var(--vscode-textLink-foreground);
+  text-decoration: underline;
 }
 .info-container vscode-badge::part(control) {
   background: var(--vscode-button-secondaryBackground);
@@ -186,6 +200,14 @@ ul.icons-list li.icon-item .icon-name {
 
 #search-icon::part(control) {
   padding-right: 30px;
+}
+
+.search-container vscode-button#view-toggle-btn::part(control) {
+  padding: 3.6px 8px;
+}
+.search-container vscode-button#view-toggle-btn svg {
+  width: 1rem;
+  height: 1rem;
 }
 
 /* Slider Style */

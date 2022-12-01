@@ -1,7 +1,9 @@
 import * as fs from "fs";
 import * as path from "path";
-import { IconSets, PathDetails } from './enum.constants.modal';
+import { IconSnippet, PathDetails } from './enum.constants.modal';
 import { Settings } from './Settings';
+
+import * as vscode from 'vscode';
 const potrace = require("potrace");
 
 const brands = require("../icons/brands.json");
@@ -11,7 +13,7 @@ const solid = require("../icons/solid.json");
 const getTitleCaseName = (name: string) => {
     const nameChunk = name.replace(/(_|-)suite/gi, " ").replace(/(_|-)/gi, " ").split(/(_|-|\s)/g);
     const titleCaseName = nameChunk
-        .map(n => n.charAt(0).toUpperCase() + n.substr(1).toLowerCase()).join(' ');
+        .map(n => n.charAt(0).toUpperCase() + n.substring(1).toLowerCase()).join(' ');
     return titleCaseName.replace(/\s{2,}/g, " ");
 };
 
@@ -20,12 +22,28 @@ export const getStats = (directoryPath: string): PathDetails | undefined => {
         const stats = fs.statSync(directoryPath);
         const extension = path.extname(directoryPath);
         const fileName = path.basename(directoryPath, extension);
-        const category = path.basename(path.dirname(directoryPath)) || '';
-        const iconName = fileName;
+        const isFile = stats.isFile();
+
+        if (isFile) {
+
+            const dirBaseName = path.basename(path.dirname(directoryPath));
+            const customIconsBaseName = path.basename(Settings.customIconsFolderPath);
+
+            const familyName = path.relative(Settings.customIconsFolderPath, path.dirname(directoryPath)).split(path.sep).shift()!;
+
+            const family = familyName !== ".." ? familyName : "";
+            const category = [dirBaseName, customIconsBaseName].includes(family) || customIconsBaseName === dirBaseName ? "" : dirBaseName;
+            const iconName = fileName;
+            return {
+                category: getTitleCaseName(category),
+                family: getTitleCaseName(family),
+                iconName: getTitleCaseName(iconName),
+                extension,
+                filePath: directoryPath,
+                isFile: stats.isFile(),
+            };
+        }
         return {
-            category: getTitleCaseName(category),
-            iconName: getTitleCaseName(iconName),
-            extension,
             filePath: directoryPath,
             isFile: stats.isFile(),
         };
@@ -38,7 +56,7 @@ export const getAllSVGIcons = (directoryPath: string,): PathDetails[] => {
     if (!stats) {
         return [];
     } else if (stats.isFile) {
-        return [".svg", ".png", ".jpg"].includes(stats.extension) ? [stats] : [];
+        return [".svg", ".png", ".jpg"].includes(stats.extension!) ? [stats] : [];
     } else {
         const files = fs.readdirSync(directoryPath);
         const filesList = files.reduce((res: PathDetails[], file: string) => {
@@ -66,40 +84,60 @@ const getSVGTextFromImageFile = async (filePath: string): Promise<string> => {
     });
 };
 
-const getCustomIconSetsFromFolder = async (customIconsFolderPath: string = '') => {
+const getCustomIconSetsFromFolder = async (customIconsFolderPath: string = ''): Promise<IconSnippet[]> => {
     try {
-        if (!customIconsFolderPath) { return {}; };
+        if (!customIconsFolderPath) { return []; };
 
-        const customIconSets: any = {};
+        const customIcons: IconSnippet[] = [];
         const svgIconPaths = getAllSVGIcons(customIconsFolderPath);
 
         for (const svgPathDetails of svgIconPaths) {
-            const { category, iconName, filePath, extension, } = svgPathDetails;
+            const { family, category, iconName, filePath, extension, } = svgPathDetails;
 
             const svg = extension === ".svg" ? getSVGTextFromSVGFile(filePath) : await getSVGTextFromImageFile(filePath);
             const base64 = svg ? 'data:image/svg+xml;base64,' + Buffer.from(svg).toString('base64') : "";
 
-            if (customIconSets[category]?.length) {
-                customIconSets[category].push({ name: iconName, label: iconName, svg, base64, family: category, keywords: [iconName, category], categories: [] });
-            } else {
-                customIconSets[category] = [{ name: iconName, label: iconName, svg, base64, family: category, keywords: [iconName, category], categories: [] }];
-            }
+            customIcons.push({
+                name: iconName!.replace(/\s/g, "-").toLowerCase(),
+                label: iconName!,
+                svg,
+                base64,
+                family: family!,
+                keywords: [iconName, family, category].filter(Boolean).map(kw => kw?.replace(/\s/g, "-").toLowerCase()) as string[],
+                categories: [category].filter(Boolean).map(kw => kw?.replace(/\s/g, "-").toLowerCase()) as string[]
+            });
         }
-        return customIconSets;
+        return customIcons.filter(icon => icon.categories?.length && icon.family);
     } catch (err) {
         console.log(err);
+        return [];
     }
 };
 
-export const getIconSets = async (): Promise<IconSets> => {
-    const { regular: cRegular = [], solid: cSolid = [], brands: cBrands = [], ...customIcons } = await getCustomIconSetsFromFolder(Settings.customIconsFolderPath);
+export const getIcons = async (): Promise<IconSnippet[]> => {
+    try {
+        const customIcons = Settings.customIcons;
+        const customIconsFromFolder = await getCustomIconSetsFromFolder(Settings.customIconsFolderPath);
+        const customIconsArchive = Settings.customIconsArchivePath ? await JSON.parse(fs.readFileSync(Settings.customIconsArchivePath, 'utf-8')) : [];
 
-    const iconsSets: any = {
-        regular: [...regular, ...cRegular],
-        solid: [...solid, ...cSolid],
-        brands: [...brands, ...cBrands],
-        ...customIcons
-    };
+        const icons: IconSnippet[] = [
+            ...regular,
+            ...solid,
+            ...brands,
+            ...customIcons,
+            ...customIconsFromFolder,
+            ...customIconsArchive
+        ];
 
-    return iconsSets;
+        const uniqueIcons = [...new Map(icons.map(icon => [`${icon.name}-${icon.family}`, icon])).values()];
+
+        return uniqueIcons;
+    } catch (err: any) {
+        vscode.window.showErrorMessage(err.message);
+        return [
+            ...regular,
+            ...solid,
+            ...brands,
+        ];
+    }
 };
