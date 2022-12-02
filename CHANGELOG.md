@@ -1,3 +1,7 @@
+## v3.1.1
+
+- Reduced build size.
+
 ## v3.1.0
 
 - Removed - Load more button and add icons automatically on scroll
