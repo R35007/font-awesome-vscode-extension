@@ -18,11 +18,7 @@ Copy Font awesome Icons as `HTML`, `React`, `Vue`, `SVG`, `Base64`, `Unicode` co
 ## Demo
 Copy Icon
 
-<img src="./images/demo.gif" width="100%" style="max-width: 1300px">
-
-Toggle View
-
-<img src="./images/view-demo.gif" width="100%" style="max-width: 1300px">
+<img src="https://user-images.githubusercontent.com/23217228/205364534-54db2ec4-cf74-4e8c-a72e-7a7bd178f964.gif" width="100%" style="max-width: 1300px">
 
 ## Author
 

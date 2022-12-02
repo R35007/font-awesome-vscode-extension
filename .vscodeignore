@@ -10,5 +10,4 @@ vsc-extension-quickstart.md
 **/*.ts
 **/*.scss
 **/*.css.map
-images/demos/**
 **/*.vsix
