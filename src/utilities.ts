@@ -4,7 +4,14 @@ import { IconSnippet, PathDetails } from './enum.constants.modal';
 import { Settings } from './Settings';
 
 import * as vscode from 'vscode';
-const potrace = require("potrace");
+
+// This may throw an error in mac.
+let potrace: any;
+try {
+    potrace = require("potrace");
+} catch (err) {
+    console.error(err);
+}
 
 const brands = require("../icons/brands.json");
 const regular = require("../icons/regular.json");
@@ -80,7 +87,7 @@ const getSVGTextFromSVGFile = (filePath: string): string => {
 
 const getSVGTextFromImageFile = async (filePath: string): Promise<string> => {
     return new Promise(resolve => {
-        potrace.trace(filePath, { color: Settings.fillColor }, (_err: any, svg: any) => resolve(svg || ""));
+        potrace?.trace(filePath, { color: Settings.fillColor }, (_err: any, svg: any) => resolve(svg || ""));
     });
 };
 
@@ -94,7 +101,7 @@ const getCustomIconSetsFromFolder = async (customIconsFolderPath: string = ''): 
         for (const svgPathDetails of svgIconPaths) {
             const { family, category, iconName, filePath, extension, } = svgPathDetails;
 
-            const svg = extension === ".svg" ? getSVGTextFromSVGFile(filePath) : await getSVGTextFromImageFile(filePath);
+            const svg = extension !== ".svg" && potrace ? await getSVGTextFromImageFile(filePath) : getSVGTextFromSVGFile(filePath);
             const base64 = svg ? 'data:image/svg+xml;base64,' + Buffer.from(svg).toString('base64') : "";
 
             customIcons.push({

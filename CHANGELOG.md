@@ -1,5 +1,9 @@
 ## v3.1.1
 
+- Support for Mac users. Limitation for Mac users are that we cannot save the icon as `.png`.
+
+## v3.1.1
+
 - Reduced build size.
 
 ## v3.1.0

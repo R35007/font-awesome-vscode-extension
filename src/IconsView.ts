@@ -1,12 +1,18 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as path from "path";
-import * as sharp from "sharp";
 import { TextEncoder } from 'util';
 import * as vscode from 'vscode';
 import { Action, IconSnippet, ICONS_VIEW, WebViewAPIMessage, WebViewAPIMessagePayload } from './enum.constants.modal';
 import LocalStorageService from './LocalStorageService';
 import { Settings } from './Settings';
 import { getIcons } from './utilities';
+
+let sharp: any;
+try {
+  sharp = require("sharp");
+} catch (err) {
+  console.error(err);
+}
 
 export class IconsView implements vscode.WebviewViewProvider {
   public static readonly viewType = ICONS_VIEW;
@@ -86,7 +92,7 @@ export class IconsView implements vscode.WebviewViewProvider {
 
     const savedPathUri = await vscode.window.showSaveDialog({
       defaultUri: vscode.Uri.parse(`./${selectedIcon.name}`),
-      filters: { 'Vector': ["svg"], 'Image': ['png'] },
+      filters: sharp ? { 'Vector': ["svg"], 'Image': ['png'] } : { 'Vector': ["svg"] },
       title: `Save ${selectedIcon.label} (${selectedIcon.name}) icon`,
     });
 
@@ -95,7 +101,7 @@ export class IconsView implements vscode.WebviewViewProvider {
     const extension = path.extname(savedPathUri.fsPath);
 
     // Save as .png file
-    if (extension === ".png") {
+    if (extension === ".png" && sharp) {
 
       let iconColor: string | undefined = Settings.pngIconColor;
 
