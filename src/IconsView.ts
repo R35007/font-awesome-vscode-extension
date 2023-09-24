@@ -2,9 +2,9 @@
 import * as path from "path";
 import { TextEncoder } from 'util';
 import * as vscode from 'vscode';
-import { Action, IconSnippet, ICONS_VIEW, WebViewAPIMessage, WebViewAPIMessagePayload } from './enum.constants.modal';
 import LocalStorageService from './LocalStorageService';
 import { Settings } from './Settings';
+import { Action, ICONS_VIEW, IconSnippet, WebViewAPIMessage, WebViewAPIMessagePayload } from './enum.constants.modal';
 import { getIcons } from './utilities';
 
 let sharp: any;
@@ -33,11 +33,11 @@ export class IconsView implements vscode.WebviewViewProvider {
   };
 
   private _view?: vscode.WebviewView;
-  private _icons: IconSnippet[] = [];
 
   constructor(
     private readonly _extensionUri: vscode.Uri,
     private readonly _storage: LocalStorageService,
+    private _icons: IconSnippet[],
   ) { }
 
   public async resolveWebviewView(
@@ -46,7 +46,6 @@ export class IconsView implements vscode.WebviewViewProvider {
     _token: vscode.CancellationToken
   ) {
     this._view = webviewView;
-    this._icons = await getIcons();
 
     webviewView.webview.options = {
       enableScripts: true,

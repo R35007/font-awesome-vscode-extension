@@ -1,4 +1,8 @@
-## v3.1.1
+## v3.2.2
+
+- Added - `font-awesome.settings.showSnippetSuggestion` settings. Set to false to prevent font awesome icon snippet suggestions
+
+## v3.2.1
 
 - Support for Mac users. Limitation for Mac users are that we cannot save the icon as `.png`.
 
@@ -22,7 +26,6 @@
 - Updated - Add custom icons.
 - Updated - Maintain view state.
 - Updated - Save icon as png in three different colors. `Black`, `Gray`, `White`.
-
 
 ## v2.0.0
 

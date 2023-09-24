@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
-import { IconSnippet, PathDetails } from './enum.constants.modal';
 import { Settings } from './Settings';
+import { IconSnippet, PathDetails } from './enum.constants.modal';
 
 import * as vscode from 'vscode';
 

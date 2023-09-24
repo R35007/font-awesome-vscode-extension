@@ -28,4 +28,7 @@ export class Settings {
   static get customIcons() {
     return Settings.getSettings('customIcons') as string;
   }
+  static get snippetSuggestion() {
+    return Settings.getSettings('snippetSuggestion') as boolean;
+  }
 }

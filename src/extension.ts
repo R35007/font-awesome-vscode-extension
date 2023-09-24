@@ -1,14 +1,27 @@
 import * as vscode from 'vscode';
-import { Commands } from './enum.constants.modal';
 import { IconsView } from './IconsView';
 import LocalStorageService from './LocalStorageService';
+import { Settings } from './Settings';
+import { Commands } from './enum.constants.modal';
+import { getIcons } from './utilities';
 
 
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
+
+    const icons = await getIcons();
+    const snippetTypes: Array<keyof typeof icons[0]> = ["class", "html", "react", "vue", "svg", "base64"];
+
+    const iconSnippets: vscode.CompletionItem[] = icons.map(icon => {
+        return snippetTypes.map((type) => {
+            const completionItem = new vscode.CompletionItem(`fa:${icon.name}:${icon.family}:${type}`, vscode.CompletionItemKind.Property);
+            completionItem.insertText = icon[type] as string;
+            return completionItem;
+        });
+    }).flat();
 
     const storage = new LocalStorageService(context.workspaceState);
-    const iconsView = new IconsView(context.extensionUri, storage);
+    const iconsView = new IconsView(context.extensionUri, storage, icons);
 
     const setContext = (key: string, value: any) => {
         storage.setValue(key, value);
@@ -77,6 +90,16 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand(Commands.REFRESH_VIEW, () => iconsView.refreshView()));
     context.subscriptions.push(vscode.commands.registerCommand(Commands.DOWNLOAD_ARCHIVE, () => iconsView.downloadIconArchive()));
     context.subscriptions.push(vscode.window.registerWebviewViewProvider(IconsView.viewType, iconsView));
+
+    const snipperLangs = ['javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'xml', 'html', 'less', 'scss', 'sass', 'css'];
+    context.subscriptions.push(...snipperLangs.map(lang => vscode.languages.registerCompletionItemProvider(lang, {
+        provideCompletionItems: () => {
+            const completionItems: vscode.CompletionItem[] = [];
+            // return if snippet suggestion is set to false
+            if (!Settings.snippetSuggestion) return completionItems;
+            return iconSnippets;
+        }
+    })));
 }
 
 // this method is called when your extension is deactivated

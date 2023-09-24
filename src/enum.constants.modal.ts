@@ -52,6 +52,7 @@ export interface IconSnippet {
     svg: string,
     categories: string[],
     keywords: string[],
+    class?: string,
     objectID?: string,
     unicode?: string,
     html?: string,
