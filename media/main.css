@@ -23,6 +23,10 @@ body {
   display: flex;
 }
 
+.align-items-center {
+  align-items: center;
+}
+
 .flex-1 {
   flex: 1;
 }
@@ -97,8 +101,6 @@ ul.icons-list li.icon-item {
   border: 1px solid rgba(255, 255, 255, 0.1019607843);
   align-items: center;
   transition: all 0.2s ease-in;
-  background: var(--vscode-menu-background);
-  color: var(--vscode-menu-foreground);
 }
 ul.icons-list li.icon-item:hover, ul.icons-list li.icon-item.selected {
   background: var(--vscode-menu-selectionBackground) !important;
@@ -106,6 +108,7 @@ ul.icons-list li.icon-item:hover, ul.icons-list li.icon-item.selected {
 }
 ul.icons-list li.icon-item:hover .icon, ul.icons-list li.icon-item.selected .icon {
   fill: var(--vscode-menu-selectionForeground) !important;
+  color: var(--vscode-menu-selectionForeground) !important;
 }
 ul.icons-list li.icon-item:hover .icon-name, ul.icons-list li.icon-item.selected .icon-name {
   color: var(--vscode-menu-selectionForeground) !important;
@@ -113,29 +116,36 @@ ul.icons-list li.icon-item:hover .icon-name, ul.icons-list li.icon-item.selected
 ul.icons-list li.icon-item .icon {
   padding: 5px;
   box-sizing: border-box;
-  fill: var(--vscode-menu-foreground);
+  border-radius: 4px;
 }
 ul.icons-list li.icon-item .icon-name {
-  color: var(--vscode-menu-foreground);
   margin: 5px;
   margin-right: 10px;
   text-align: left;
   transition: all 0.2s ease-in;
+  word-break: break-all;
 }
 
 .info-container {
   padding: 13px;
   font-size: 0.7rem;
-  position: -webkit-sticky;
   position: sticky;
   top: 0;
   background: var(--vscode-sideBar-background);
 }
+.info-container .icon-name-container {
+  flex: 1;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  margin-right: 1rem;
+  min-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .info-container #selected-icon-image {
-  fill: var(--vscode-foreground);
   width: 5rem;
   height: 5rem;
-  padding: 6px;
+  margin-right: 6px;
   min-width: 3rem;
   box-sizing: border-box;
   border-radius: 4px;
@@ -154,10 +164,14 @@ ul.icons-list li.icon-item .icon-name {
 .info-container #selected-icon-image svg {
   width: 80% !important;
   height: 80% !important;
+  border-radius: 4px;
+  padding: 0.5rem;
+  transition: all 0.2s linear;
 }
 .info-container #selected-icon-image:hover {
-  background: var(--vscode-menu-background);
-  fill: var(--vscode-menu-foreground);
+  background: var(--vscode-menu-selectionBackground) !important;
+  fill: var(--vscode-menu-selectionForeground) !important;
+  color: var(--vscode-menu-selectionForeground) !important;
 }
 .info-container .detail-container vscode-text-area::part(control) {
   height: 100%;
@@ -202,10 +216,13 @@ ul.icons-list li.icon-item .icon-name {
   padding-right: 30px;
 }
 
-.search-container vscode-button#view-toggle-btn::part(control) {
+.search-container {
+  align-items: stretch;
+}
+.search-container vscode-button::part(control) {
   padding: 3.6px 8px;
 }
-.search-container vscode-button#view-toggle-btn svg {
+.search-container vscode-button svg {
   width: 1rem;
   height: 1rem;
 }
@@ -213,32 +230,12 @@ ul.icons-list li.icon-item .icon-name {
 /* Slider Style */
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
   input[type=range] {
-    overflow: hidden;
-    min-width: 200px;
-    flex: auto;
-    height: 6px;
-    -webkit-appearance: none;
+    height: 4px;
+    flex: 1;
     border-radius: 4px;
-    background-color: var(--vscode-input-background);
-  }
-  input[type=range]::-webkit-slider-runnable-track {
-    height: 10px;
-    width: 100%;
-    -webkit-appearance: none;
-    margin-top: -1px;
   }
   input[type=range]::-webkit-slider-thumb {
-    width: 10px;
-    -webkit-appearance: none;
-    height: 10px;
-    cursor: ew-resize;
-    background: var(--vscode-focusBorder);
-    box-shadow: -1000px 0 0 1000px var(--vscode-button-background);
-    -webkit-transition: all 0.2s linear;
-    transition: all 0.2s linear;
-  }
-  input[type=range]:hover::-webkit-slider-thumb {
-    box-shadow: -1000px 0 0 1000px var(--vscode-button-hoverBackground);
+    cursor: pointer;
   }
   input[type=range]:focus {
     border: none !important;

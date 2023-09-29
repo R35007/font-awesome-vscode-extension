@@ -2,7 +2,7 @@
 export const ICONS_VIEW = "font-awesome.icons-view";
 
 export enum Commands {
-    COPY_ICON_AS = "font-awesome.copyAs",
+    COPY_SNIPPET_AS = "font-awesome.copySnippetAs",
     SAVE_ICON = "font-awesome.saveIcon",
     DOWNLOAD_ARCHIVE = "font-awesome.download",
     REFRESH_VIEW = "font-awesome.refreshView",

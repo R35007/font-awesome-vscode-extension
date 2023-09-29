@@ -2,7 +2,7 @@
   "name": "font-awesome",
   "displayName": "Font Awesome",
   "description": "Copy Font awesome Icons as HTML, React, Vue, SVG, Base64, Unicode code snippet. Save icon as png or svg.",
-  "version": "3.2.2",
+  "version": "4.0.0",
   "icon": "images/logo.png",
   "publisher": "Thinker",
   "license": "MIT",
@@ -39,7 +39,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:font-awesome.copyAs",
+    "onCommand:font-awesome.copySnippetAs",
     "onCommand:font-awesome.download",
     "onCommand:font-awesome.saveIcon",
     "onCommand:font-awesome.refreshView",
@@ -72,7 +72,7 @@
         "font-awesome.settings.fillColor": {
           "order": 1,
           "type": "string",
-          "default": "#ffffff",
+          "default": "currentColor",
           "required": true,
           "description": "Set svg fill color when converting custom image to svg"
         },
@@ -213,10 +213,32 @@
           "description": "Provide a Custom Icons object that contains list of icon details"
         },
         "font-awesome.settings.showSnippetSuggestion": {
-          "order": 5,
+          "order": 6,
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "Set to false to prevent font awesome icon snippet suggestions."
+        },
+        "font-awesome.settings.copyOnClick": {
+          "order": 7,
+          "type": "boolean",
+          "default": false,
+          "description": "Set to true to copy icon snippet immediately on clicking icon in the list."
+        },
+        "font-awesome.settings.copySnippetAs": {
+          "order": 8,
+          "type": "string",
+          "default": "svg",
+          "enum": [
+            "name",
+            "class",
+            "html",
+            "react",
+            "vue",
+            "svg",
+            "base64",
+            "unicode"
+          ],
+          "description": "Pick a snippet type to copy icon snippet immediately on clicking icon in the list."
         }
       }
     },
@@ -242,8 +264,8 @@
     },
     "commands": [
       {
-        "command": "font-awesome.copyAs",
-        "title": "Set Icon Copy Type",
+        "command": "font-awesome.copySnippetAs",
+        "title": "Set Icon Copy Snippet Type",
         "category": "Font Awesome"
       },
       {
@@ -443,7 +465,7 @@
     "typescript": "^4.4.3"
   },
   "dependencies": {
-    "@vscode/webview-ui-toolkit": "^0.8.4",
+    "@vscode/webview-ui-toolkit": "^1.2.2",
     "potrace": "^2.1.8",
     "sharp": "^0.31.2"
   }

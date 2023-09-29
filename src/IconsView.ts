@@ -22,13 +22,13 @@ export class IconsView implements vscode.WebviewViewProvider {
     showIconInfo: true,
     showCategoryBadge: true,
     sortType: "feature",
-    copyType: "name",
     viewType: "CheatSheetStaggered",
     iconFamily: "all",
     iconCategory: "all",
     iconSize: 32,
     zoom: 20,
     searchText: "",
+    isInverted: false,
     selectedIcon: {},
   };
 
@@ -168,8 +168,9 @@ export class IconsView implements vscode.WebviewViewProvider {
     const showIconInfo = this._storage.getValue("showIconInfo", this.defaultViewState.showIconInfo);
     const showCategoryBadge = this._storage.getValue("showCategoryBadge", this.defaultViewState.showCategoryBadge);
 
+    const copyOnClick = Settings.copyOnClick;
+    const copySnippetAs = Settings.copySnippetAs;
     const sortType = this._storage.getValue("sortType", this.defaultViewState.sortType);
-    const copyType = this._storage.getValue("copyType", this.defaultViewState.copyType);
     const viewType = this._storage.getValue("viewType", this.defaultViewState.viewType);
 
     const iconFamily = this._storage.getValue("iconFamily", this.defaultViewState.iconFamily);
@@ -177,9 +178,11 @@ export class IconsView implements vscode.WebviewViewProvider {
 
     const iconSize = this._storage.getValue("iconSize", this.defaultViewState.iconSize);
     const zoom = this._storage.getValue("zoom", this.defaultViewState.zoom);
+    const isInverted = this._storage.getValue("isInverted", this.defaultViewState.isInverted);
 
     const searchText = this._storage.getValue("searchText", this.defaultViewState.searchText);
     const selectedIcon = this._storage.getValue("selectedIcon", this.defaultViewState.selectedIcon);
+
 
     return {
       showIconName,
@@ -188,11 +191,13 @@ export class IconsView implements vscode.WebviewViewProvider {
       iconFamily,
       iconCategory,
       iconSize,
+      copyOnClick,
       zoom,
+      isInverted,
       searchText,
       selectedIcon,
       sortType,
-      copyType,
+      copySnippetAs,
       viewType
     };
   }
@@ -218,25 +223,22 @@ export class IconsView implements vscode.WebviewViewProvider {
       showIconInfo,
       showCategoryBadge,
       iconFamily,
-      iconCategory,
       iconSize,
       zoom,
       searchText,
+      copySnippetAs,
       viewType
     } = this.getViewState();
 
     const families: string[] = [...new Set(this._icons.map(icon => icon.family.toLowerCase()).filter(Boolean))];
-    const categories: string[] = [...new Set(this._icons.map(icon => icon.categories).flat().map(category => category.toLowerCase()).filter(Boolean))];
-
-    const categoriesOptions = ["all", ...categories.sort()].map(category => (`<vscode-option ${iconCategory === category ? "selected" : ""} style="text-transform: capitalize;" value="${category}">${category}</vscode-option>`)).join('');
     const iconFamiliesOptions = ["all", ...families.sort()].map(style => (`<vscode-option ${iconFamily === style ? "selected" : ""} style="text-transform: capitalize;" value="${style}">${style}</vscode-option>`)).join('');
 
     const copyTypes = ["name", "class", "html", "react", "vue", "svg", "base64", "unicode"];
 
-    const tabsList = copyTypes.map(type => `<vscode-panel-tab data-type="${type}" style="text-transform: capitalize;">${type}</vscode-panel-tab>`).join("");
+    const tabsList = copyTypes.map(type => `<vscode-panel-tab data-type="${type}" data-copy-type="${type}" style="text-transform: capitalize;">${type}</vscode-panel-tab>`).join("");
     const viewsList = copyTypes.map(type => `
       <vscode-panel-view class="p-0" id="${type}-snippet-view">
-          <vscode-text-area readonly class="w-100 h-100" value="" rows=1 data-type="${type}"></vscode-text-area>
+          <vscode-text-area readonly class="w-100" value="" rows=1 data-type="${type}" data-copy-type="${type}"></vscode-text-area>
       </vscode-panel-view>
     `).join("");
 
@@ -268,36 +270,36 @@ export class IconsView implements vscode.WebviewViewProvider {
     <body>
         <div class="info-container">
             <header class="row">
-              <div style="flex:1; font-size: 1.2rem; margin-bottom: 5px; margin-right: 1rem; min-width: 200px;">
+              <div class="icon-name-container">
                 <span id="selected-icon-label" style="margin-right: 5px;"><!-- inject selected icon label from script  --></span>
                 <span style="font-size: 0.9rem; opacity: 0.9;" title="copy name"><a id="selected-icon-name"><!-- inject selected icon name from script  --></a></span>
               </div>
               <div class="row filters mb-0" style="gap: 1rem; flex-wrap: nowrap; flex: 1;">
                 <div class="flex-1">
-                  <div>Category</div>
-                  <vscode-dropdown id="icon-category" class="w-100" style="text-transform: capitalize; margin-top: 5px;">
-                    ${categoriesOptions}
-                  </vscode-dropdown>
-                </div>
-                <div class="flex-1">
-                  <div>Style</div>
+                  <div style="display: flex; justify-content: space-between;">Style<span id="style-count">${families.length - 1}</span></div>
                   <vscode-dropdown id="icon-family" class="w-100" style="text-transform: capitalize; margin-top: 5px;">
                     ${iconFamiliesOptions}
                   </vscode-dropdown>
                 </div>
+                <div class="flex-1">
+                  <div style="display: flex; justify-content: space-between;">Category<span id="category-count"></span></div>
+                  <vscode-dropdown id="icon-category" class="w-100" style="text-transform: capitalize; margin-top: 5px;">
+                    <!-- inject categories options from script  -->
+                  </vscode-dropdown>
+                </div>
               </div>
             </header>
-            <div id="icon-info-container"  class="row m-0" style="justify-content: center; align-items: unset; display: ${showIconInfo ? "flex" : "none"}">
+            <div id="icon-info-container" class="row m-0" style="justify-content: center; align-items: end; display: ${showIconInfo ? "flex" : "none"}">
                 <div id="selected-icon-image" class="col" title="click here to save icon">
                   <!-- inject selected icon image from script  -->
                 </div>
                 <div class="col detail-container flex-1" style="font-size: 0.8rem">
-                  <div class="row w-100 mb-0 position-relative">
-                    <vscode-panels class="w-100" style="overflow: visible;">
+                  <div class="row w-100 mb-0 d-flex" style="align-items: end; justify-content: end;">
+                    <vscode-panels class="flex-1" style="overflow: visible;">
                       ${tabsList}
                       ${viewsList}
                     </vscode-panels>
-                    <vscode-button id="copy-btn" class="copy-btn position-absolute" style=" bottom: 4px; right: 1px; padding: 3px 0;">copy</vscode-button>
+                    <vscode-button id="copy-btn" class="copy-btn" data-copy-type="${copySnippetAs}" style=" bottom: 4px; right: 1px; padding: 7px 5px;">Copy</vscode-button>
                   </div>
                 </div>
             </div>
@@ -306,15 +308,20 @@ export class IconsView implements vscode.WebviewViewProvider {
             </div>
             <div class="row">
               <div class="key">Zoom : <span id="zoom-percent">${zoom}%<span></div>
-              <input type="range" min="25" max="60" step="1" value="${iconSize}" id="icon-size-slider">
+              <input type="range" min="25" max="100" step="1" value="${iconSize}" id="icon-size-slider">
             </div>
             <div class="row search-container">
-              <div class="row position-relative mb-0 flex-1">
+              <div class="row position-relative mb-0 flex-1 d-flex align-items-center">
                 <vscode-text-field id="search-icon-textbox" value="${searchText}" placeholder="Search Icons" class="w-100"></vscode-text-field>
                 <span id="total-icons"></span>
               </div>
               <vscode-button id="view-toggle-btn" data-current-view="${viewType}" title="Toggle View" style="display: ${showIconName ? "block" : "none"}">
                 ${viewTypeIcon}
+              </vscode-button>
+              <vscode-button id="invert-bg" title="Invert Color">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" version="1.1">
+                  <path d="M 84.500 26.435 C 57.023 32.866, 36.133 52.242, 27.828 79 C 24.462 89.845, 24.462 110.155, 27.828 121 C 34.164 141.416, 48.707 158.493, 67.422 167.495 C 78.790 172.962, 85.780 174.456, 100 174.456 C 114.247 174.456, 121.208 172.963, 132.668 167.451 C 151.679 158.307, 167.042 139.698, 172.693 118.968 C 175.124 110.051, 175.124 89.949, 172.693 81.032 C 165.870 56.001, 146.329 35.750, 121.500 27.978 C 112.495 25.159, 93.361 24.362, 84.500 26.435 M 100 100 L 100 162 103.951 162 C 110.872 162, 118.241 159.956, 127.726 155.405 C 140.570 149.243, 149.243 140.570, 155.405 127.726 C 160.555 116.992, 162 110.918, 162 100 C 162 89.082, 160.555 83.008, 155.405 72.274 C 151.962 65.097, 149.461 61.530, 144.150 56.219 C 133.486 45.555, 117.057 38.059, 104.250 38.015 L 100 38 100 100" stroke="none" fill="#ffffff" fill-rule="evenodd"/>
+                </svg>
               </vscode-button>
             </div>
         </div>

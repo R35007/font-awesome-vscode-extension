@@ -33,9 +33,10 @@ export async function activate(context: vscode.ExtensionContext) {
     setContext('showCategoryBadge', true); // Show Category badges by default
     setContext('sortByFeature', true); // Sort by Features by default
 
-    context.subscriptions.push(vscode.commands.registerCommand(Commands.COPY_ICON_AS, async () => {
+    context.subscriptions.push(vscode.commands.registerCommand(Commands.COPY_SNIPPET_AS, async () => {
         const copyType = await vscode.window.showQuickPick(["name", "class", "html", "react", "vue", "svg", "base64", "unicode"]);
         if (!copyType) return;
+        Settings.copySnippetAs = copyType;
         iconsView.menuAction("setCopyType", copyType);
     }));
 
@@ -96,7 +97,7 @@ export async function activate(context: vscode.ExtensionContext) {
         provideCompletionItems: () => {
             const completionItems: vscode.CompletionItem[] = [];
             // return if snippet suggestion is set to false
-            if (!Settings.snippetSuggestion) return completionItems;
+            if (!Settings.showSnippetSuggestion) return completionItems;
             return iconSnippets;
         }
     })));

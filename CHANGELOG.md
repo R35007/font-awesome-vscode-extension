@@ -1,3 +1,17 @@
+## v4.0.0
+
+- Fixed - Snippet not showing up issue fixed
+- Fixed - Icons not added from the custom icon folder issue fixed.
+- Fixed - Icon Name overflows in a grid view issue fixed.
+- Renamed - `font-awesome.copyAs` to `font-awesome.copySnippetAs`
+- Added - `font-awesome.settings.copyOnClick` settings. Set to true to always copy the icon snippet on clicking the icon in the list.
+- Added - `font-awesome.settings.copySnippetAs` settings. Set to icon snippet type to copy on click.
+- Added - Style and Category count near dropdown.
+- Added - Category dropdown filters the options based on selected Style.
+- Added - Invert Icon Color in the Font Awesome sidebar view.
+- Modified - `font-awesome.settings.fillColor` settings default value to `currentColor`.
+- Enhanced - Font Awesome sidebar view styles.
+
 ## v3.2.2
 
 - Added - `font-awesome.settings.showSnippetSuggestion` settings. Set to false to prevent font awesome icon snippet suggestions

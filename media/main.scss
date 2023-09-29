@@ -23,6 +23,10 @@ body {
   display: flex;
 }
 
+.align-items-center {
+  align-items: center;
+}
+
 .flex-1 {
   flex: 1;
 }
@@ -97,8 +101,6 @@ ul.icons-list {
     border: 1px solid #ffffff1a;
     align-items: center;
     transition: all 0.2s ease-in;
-    background: var(--vscode-menu-background);
-    color: var(--vscode-menu-foreground);
 
     &:hover,
     &.selected {
@@ -107,6 +109,7 @@ ul.icons-list {
 
       .icon {
         fill: var(--vscode-menu-selectionForeground) !important;
+        color: var(--vscode-menu-selectionForeground) !important;
       }
 
       .icon-name {
@@ -117,15 +120,15 @@ ul.icons-list {
     .icon {
       padding: 5px;
       box-sizing: border-box;
-      fill: var(--vscode-menu-foreground);
+      border-radius: 4px;
     }
 
     .icon-name {
-      color: var(--vscode-menu-foreground);
       margin: 5px;
       margin-right: 10px;
       text-align: left;
       transition: all 0.2s ease-in;
+      word-break: break-all;
     }
   }
 }
@@ -137,11 +140,20 @@ ul.icons-list {
   top: 0;
   background: var(--vscode-sideBar-background);
 
+  .icon-name-container{
+    flex:1; 
+    font-size: 1.2rem; 
+    margin-bottom: 5px; 
+    margin-right: 1rem; 
+    min-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   #selected-icon-image {
-    fill: var(--vscode-foreground);
     width: 5rem;
     height: 5rem;
-    padding: 6px;
+    margin-right: 6px;
     min-width: 3rem;
     box-sizing: border-box;
     border-radius: 4px;
@@ -152,7 +164,6 @@ ul.icons-list {
     align-items: center;
     justify-content: center;
 
-
     @media (max-width: 500px) {
       display: none;
     }
@@ -160,11 +171,15 @@ ul.icons-list {
     svg {
       width: 80% !important;
       height: 80% !important;
+      border-radius: 4px;
+      padding: 0.5rem;
+      transition: all 0.2s linear;
     }
 
     &:hover {
-      background: var(--vscode-menu-background);
-      fill: var(--vscode-menu-foreground);
+      background: var(--vscode-menu-selectionBackground) !important;
+      fill: var(--vscode-menu-selectionForeground) !important;
+      color: var(--vscode-menu-selectionForeground) !important;
     }
   }
 
@@ -221,11 +236,12 @@ ul.icons-list {
 }
 
 .search-container {
-  vscode-button#view-toggle-btn {
+  align-items: stretch;
+  
+  vscode-button {
     &::part(control) {
       padding: 3.6px 8px;
     }
-
     svg {
       width: 1rem;
       height: 1rem;
@@ -236,34 +252,17 @@ ul.icons-list {
 /* Slider Style */
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   input[type='range'] {
-    overflow: hidden;
-    min-width: 200px;
-    flex: auto;
-    height: 6px;
-    -webkit-appearance: none;
+    height: 4px;
+    flex: 1;
     border-radius: 4px;
-    background-color: var(--vscode-input-background);
   }
 
-  input[type='range']::-webkit-slider-runnable-track {
-    height: 10px;
-    width: 100%;
-    -webkit-appearance: none;
-    margin-top: -1px;
-  }
+  // input[type='range']::-webkit-slider-runnable-track {
+  //   background-color: var(--vscode-input-background);
+  // }
 
   input[type='range']::-webkit-slider-thumb {
-    width: 10px;
-    -webkit-appearance: none;
-    height: 10px;
-    cursor: ew-resize;
-    background: var(--vscode-focusBorder);
-    box-shadow: -1000px 0 0 1000px var(--vscode-button-background);
-    transition: all 0.2s linear;
-  }
-
-  input[type='range']:hover::-webkit-slider-thumb {
-    box-shadow: -1000px 0 0 1000px var(--vscode-button-hoverBackground);
+    cursor: pointer;
   }
 
   input[type='range']:focus {

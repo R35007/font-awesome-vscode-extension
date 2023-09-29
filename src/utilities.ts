@@ -42,8 +42,8 @@ export const getStats = (directoryPath: string): PathDetails | undefined => {
             const category = [dirBaseName, customIconsBaseName].includes(family) || customIconsBaseName === dirBaseName ? "" : dirBaseName;
             const iconName = fileName;
             return {
-                category: getTitleCaseName(category),
-                family: getTitleCaseName(family),
+                category: getTitleCaseName(category).toLowerCase(),
+                family: getTitleCaseName(family).toLowerCase(),
                 iconName: getTitleCaseName(iconName),
                 extension,
                 filePath: directoryPath,
@@ -109,12 +109,12 @@ const getCustomIconSetsFromFolder = async (customIconsFolderPath: string = ''): 
                 label: iconName!,
                 svg,
                 base64,
-                family: family!,
+                family: family || 'others',
                 keywords: [iconName, family, category].filter(Boolean).map(kw => kw?.replace(/\s/g, "-").toLowerCase()) as string[],
-                categories: [category].filter(Boolean).map(kw => kw?.replace(/\s/g, "-").toLowerCase()) as string[]
+                categories: [category || 'others'].filter(Boolean).map(kw => kw?.replace(/\s/g, "-").toLowerCase()) as string[]
             });
         }
-        return customIcons.filter(icon => icon.categories?.length && icon.family);
+        return customIcons;
     } catch (err) {
         console.log(err);
         return [];
