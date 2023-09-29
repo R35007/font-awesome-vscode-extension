@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as path from "path";
-import { TextEncoder } from 'util';
-import * as vscode from 'vscode';
-import LocalStorageService from './LocalStorageService';
-import { Settings } from './Settings';
-import { Action, ICONS_VIEW, IconSnippet, WebViewAPIMessage, WebViewAPIMessagePayload } from './enum.constants.modal';
-import { getIcons } from './utilities';
+import { TextEncoder } from "util";
+import * as vscode from "vscode";
+import LocalStorageService from "./LocalStorageService";
+import { Settings } from "./Settings";
+import { Action, ICONS_VIEW, IconSnippet, WebViewAPIMessage, WebViewAPIMessagePayload } from "./enum.constants.modal";
+import { getIcons, getReactJSComponent, getReactTSComponent } from "./utilities";
 
 let sharp: any;
 try {
@@ -34,11 +34,7 @@ export class IconsView implements vscode.WebviewViewProvider {
 
   private _view?: vscode.WebviewView;
 
-  constructor(
-    private readonly _extensionUri: vscode.Uri,
-    private readonly _storage: LocalStorageService,
-    private _icons: IconSnippet[],
-  ) { }
+  constructor(private readonly _extensionUri: vscode.Uri, private readonly _storage: LocalStorageService, private _icons: IconSnippet[]) { }
 
   public async resolveWebviewView(
     webviewView: vscode.WebviewView,
@@ -63,7 +59,7 @@ export class IconsView implements vscode.WebviewViewProvider {
     webviewView.webview.onDidReceiveMessage(this.onDidReceiveMessage);
   }
 
-  // On receive any message from webview. 
+  // On receive any message from webview.
   private onDidReceiveMessage = (data: WebViewAPIMessage) => {
     switch (data.type) {
       case Action.SET_VIEW_STATE: {
@@ -88,10 +84,9 @@ export class IconsView implements vscode.WebviewViewProvider {
   }
 
   public async saveIcon(selectedIcon: IconSnippet = this._storage.getValue("selectedIcon", this._icons[0])) {
-
     const savedPathUri = await vscode.window.showSaveDialog({
       defaultUri: vscode.Uri.parse(`./${selectedIcon.name}`),
-      filters: sharp ? { 'Vector': ["svg"], 'Image': ['png'] } : { 'Vector': ["svg"] },
+      filters: sharp ? { Vector: ["svg"], Image: ["png"], React: ["jsx", "tsx"] } : { Vector: ["svg"], React: ["jsx", "tsx"] },
       title: `Save ${selectedIcon.label} (${selectedIcon.name}) icon`,
     });
 
@@ -101,10 +96,9 @@ export class IconsView implements vscode.WebviewViewProvider {
 
     // Save as .png file
     if (extension === ".png" && sharp) {
-
       let iconColor: string | undefined = Settings.pngIconColor;
 
-      if (Settings.pngIconColor === 'Prompt') {
+      if (Settings.pngIconColor === "Prompt") {
         iconColor = await vscode.window.showQuickPick(["Black", "Gray", "White"], {
           title: "Icon Color",
           placeHolder: "Pick a icon color to save",
@@ -114,16 +108,16 @@ export class IconsView implements vscode.WebviewViewProvider {
       if (!iconColor) return;
 
       const color: any = {
-        "Black": -100,
-        "White": 100,
-        "Gray": 50,
+        Black: -100,
+        White: 100,
+        Gray: 50,
       };
 
       const png = await sharp(Buffer.from(selectedIcon.svg))
         .resize({
           width: Settings.pngDimensions.width,
           height: Settings.pngDimensions.height,
-          fit: 'inside'
+          fit: "inside",
         })
         .modulate({ lightness: color[iconColor] })
         .png()
@@ -137,28 +131,41 @@ export class IconsView implements vscode.WebviewViewProvider {
       await vscode.workspace.fs.writeFile(savedPathUri, new TextEncoder().encode(selectedIcon.svg));
     }
 
+    // Save as .jsx file
+    if (extension === ".jsx") {
+      await vscode.workspace.fs.writeFile(savedPathUri, new TextEncoder().encode(getReactJSComponent(selectedIcon.name, selectedIcon.svg)));
+    }
+
+    // Save as .tsx file
+    if (extension === ".tsx") {
+      await vscode.workspace.fs.writeFile(savedPathUri, new TextEncoder().encode(getReactTSComponent(selectedIcon.name, selectedIcon.svg)));
+    }
+
     await vscode.commands.executeCommand("vscode.open", savedPathUri);
   }
 
   public async downloadIconArchive() {
     const savedPathUri = await vscode.window.showSaveDialog({
       defaultUri: vscode.Uri.parse(`./font-awesome-icons.json`),
-      filters: { 'JSON': ["json"] },
+      filters: { JSON: ["json"] },
       title: `Save Font Awesome Icons`,
     });
 
     if (savedPathUri) {
-      await vscode.workspace.fs.writeFile(savedPathUri, new TextEncoder().encode(JSON.stringify(this._icons, null, vscode.window.activeTextEditor?.options.tabSize || 2)));
+      await vscode.workspace.fs.writeFile(
+        savedPathUri,
+        new TextEncoder().encode(JSON.stringify(this._icons, null, vscode.window.activeTextEditor?.options.tabSize || 2))
+      );
       await vscode.commands.executeCommand("vscode.open", savedPathUri);
     }
   }
 
   public async refreshView() {
     this._icons = await getIcons();
-    vscode.commands.executeCommand('setContext', 'showIconName', true);
-    vscode.commands.executeCommand('setContext', 'showIconInfo', true);
-    vscode.commands.executeCommand('setContext', 'showCategoryBadge', true);
-    vscode.commands.executeCommand('setContext', 'sortByFeature', true);
+    vscode.commands.executeCommand("setContext", "showIconName", true);
+    vscode.commands.executeCommand("setContext", "showIconInfo", true);
+    vscode.commands.executeCommand("setContext", "showCategoryBadge", true);
+    vscode.commands.executeCommand("setContext", "sortByFeature", true);
     Object.entries(this.defaultViewState).forEach(([key, val]) => this._storage.setValue(key, val));
     this._view && (this._view.webview.html = this._getHtmlForWebview(this._view.webview));
   }
@@ -183,7 +190,6 @@ export class IconsView implements vscode.WebviewViewProvider {
     const searchText = this._storage.getValue("searchText", this.defaultViewState.searchText);
     const selectedIcon = this._storage.getValue("selectedIcon", this.defaultViewState.selectedIcon);
 
-
     return {
       showIconName,
       showIconInfo,
@@ -198,7 +204,7 @@ export class IconsView implements vscode.WebviewViewProvider {
       selectedIcon,
       sortType,
       copySnippetAs,
-      viewType
+      viewType,
     };
   }
 
@@ -207,53 +213,58 @@ export class IconsView implements vscode.WebviewViewProvider {
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
-    const scriptMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'main.js'));
-    const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, ...['media', 'main.css']));
+    const scriptMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "main.js"));
+    const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, ...["media", "main.css"]));
 
     // Toolkit Uri
     const toolkitUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(
-        this._extensionUri,
-        ...['node_modules', '@vscode', 'webview-ui-toolkit', 'dist', 'toolkit.js']
-      )
+      vscode.Uri.joinPath(this._extensionUri, ...["node_modules", "@vscode", "webview-ui-toolkit", "dist", "toolkit.js"])
     );
 
-    const {
-      showIconName,
-      showIconInfo,
-      showCategoryBadge,
-      iconFamily,
-      iconSize,
-      zoom,
-      searchText,
-      copySnippetAs,
-      viewType
-    } = this.getViewState();
+    const { showIconName, showIconInfo, showCategoryBadge, iconFamily, iconSize, zoom, searchText, copySnippetAs, viewType } =
+      this.getViewState();
 
-    const families: string[] = [...new Set(this._icons.map(icon => icon.family.toLowerCase()).filter(Boolean))];
-    const iconFamiliesOptions = ["all", ...families.sort()].map(style => (`<vscode-option ${iconFamily === style ? "selected" : ""} style="text-transform: capitalize;" value="${style}">${style}</vscode-option>`)).join('');
+    const families: string[] = [...new Set(this._icons.map((icon) => icon.family.toLowerCase()).filter(Boolean))];
+    const iconFamiliesOptions = ["all", ...families.sort()]
+      .map(
+        (style) =>
+          `<vscode-option ${iconFamily === style ? "selected" : ""
+          } style="text-transform: capitalize;" value="${style}">${style}</vscode-option>`
+      )
+      .join("");
 
     const copyTypes = ["name", "class", "html", "react", "vue", "svg", "base64", "unicode"];
 
-    const tabsList = copyTypes.map(type => `<vscode-panel-tab data-type="${type}" data-copy-type="${type}" style="text-transform: capitalize;">${type}</vscode-panel-tab>`).join("");
-    const viewsList = copyTypes.map(type => `
+    const tabsList = copyTypes
+      .map(
+        (type) =>
+          `<vscode-panel-tab data-type="${type}" data-copy-type="${type}" style="text-transform: capitalize;">${type}</vscode-panel-tab>`
+      )
+      .join("");
+    const viewsList = copyTypes
+      .map(
+        (type) => `
       <vscode-panel-view class="p-0" id="${type}-snippet-view">
           <vscode-text-area readonly class="w-100" value="" rows=1 data-type="${type}" data-copy-type="${type}"></vscode-text-area>
       </vscode-panel-view>
-    `).join("");
+    `
+      )
+      .join("");
 
-    const cheatSheetIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>';
-    const compactIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M384 96V224H256V96H384zm0 192V416H256V288H384zM192 224H64V96H192V224zM64 288H192V416H64V288zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64z"/></svg>';
-    const cheatSheetStaggeredIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM64 256c0-17.7 14.3-32 32-32H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H96c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>';
+    const cheatSheetIcon =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>';
+    const compactIcon =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M384 96V224H256V96H384zm0 192V416H256V288H384zM192 224H64V96H192V224zM64 288H192V416H64V288zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64z"/></svg>';
+    const cheatSheetStaggeredIcon =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM64 256c0-17.7 14.3-32 32-32H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H96c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>';
 
     const viewTypeIconMapping: any = {
-      "CheatSheetStaggered": cheatSheetStaggeredIcon,
-      "CheatSheet": cheatSheetIcon,
-      "Compact": compactIcon,
+      CheatSheetStaggered: cheatSheetStaggeredIcon,
+      CheatSheet: cheatSheetIcon,
+      Compact: compactIcon,
     };
 
     const viewTypeIcon = viewTypeIconMapping[viewType] || cheatSheetIcon;
-
 
     // Use a nonce to only allow a specific script to be run.
     const nonce = getNonce();
@@ -262,7 +273,8 @@ export class IconsView implements vscode.WebviewViewProvider {
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} data: ; script-src 'nonce-${nonce}';">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource
+      } data: ; script-src 'nonce-${nonce}';">
         <link href="${styleMainUri}" rel="stylesheet">
         <script type="module" src="${toolkitUri}" nonce="${nonce}"></script>
         <title>Font Awesome</title>
@@ -315,7 +327,7 @@ export class IconsView implements vscode.WebviewViewProvider {
                 <vscode-text-field id="search-icon-textbox" value="${searchText}" placeholder="Search Icons" class="w-100"></vscode-text-field>
                 <span id="total-icons"></span>
               </div>
-              <vscode-button id="view-toggle-btn" data-current-view="${viewType}" title="Toggle View" style="display: ${showIconName ? "block" : "none"}">
+              <vscode-button id="view-toggle-btn" data-current-view="${viewType}" title="Toggle View" style="display: $showIconName ? "block" : "none"}">
                 ${viewTypeIcon}
               </vscode-button>
               <vscode-button id="invert-bg" title="Invert Color">
@@ -344,8 +356,8 @@ export class IconsView implements vscode.WebviewViewProvider {
 }
 
 function getNonce() {
-  let text = '';
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let text = "";
+  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for (let i = 0; i < 32; i++) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }

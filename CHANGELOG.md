@@ -1,3 +1,7 @@
+## v4.1.0
+
+- Added - Save Icon as React Component with `.jsx` and `.tsx` extension;
+
 ## v4.0.0
 
 - Fixed - Snippet not showing up issue fixed
