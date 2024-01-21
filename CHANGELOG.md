@@ -1,3 +1,8 @@
+## v4.2.0
+
+- Fixed - Loading more icons on scroll shows Icon name even when we set to hide icon name issue fixed.
+- Modified - Now snippet suggestion triggers only when we type `fa:(Ctrl+Space)`.
+
 ## v4.1.0
 
 - Added - Save Icon as React Component with `.jsx` and `.tsx` extension;

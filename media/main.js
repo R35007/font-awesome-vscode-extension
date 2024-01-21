@@ -170,7 +170,7 @@ function init(iconsList, viewState) {
 
   const getIconNameStyle = () => {
     const style = {
-      display: "block",
+      display: showIconName ? "block" : "none",
       "text-align": viewType === View.Compact ? "center" : "left",
       color: isInverted ? "var(--vscode-menu-background)" : "var(--vscode-menu-foreground)",
     };

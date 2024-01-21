@@ -176,7 +176,8 @@ export class IconsView implements vscode.WebviewViewProvider {
     const showCategoryBadge = this._storage.getValue("showCategoryBadge", this.defaultViewState.showCategoryBadge);
 
     const copyOnClick = Settings.copyOnClick;
-    const copySnippetAs = Settings.copySnippetAs;
+    const copySnippetAs = copyOnClick ? Settings.copySnippetAs : "name";
+    
     const sortType = this._storage.getValue("sortType", this.defaultViewState.sortType);
     const viewType = this._storage.getValue("viewType", this.defaultViewState.viewType);
 
@@ -221,35 +222,25 @@ export class IconsView implements vscode.WebviewViewProvider {
       vscode.Uri.joinPath(this._extensionUri, ...["node_modules", "@vscode", "webview-ui-toolkit", "dist", "toolkit.js"])
     );
 
-    const { showIconName, showIconInfo, showCategoryBadge, iconFamily, iconSize, zoom, searchText, copySnippetAs, viewType } =
-      this.getViewState();
+    const { showIconInfo, showCategoryBadge, iconFamily, iconSize, zoom, searchText, copySnippetAs, viewType } = this.getViewState();
 
     const families: string[] = [...new Set(this._icons.map((icon) => icon.family.toLowerCase()).filter(Boolean))];
-    const iconFamiliesOptions = ["all", ...families.sort()]
-      .map(
-        (style) =>
-          `<vscode-option ${iconFamily === style ? "selected" : ""
-          } style="text-transform: capitalize;" value="${style}">${style}</vscode-option>`
-      )
-      .join("");
+    const iconFamiliesOptions = ["all", ...families.sort()].map((style) =>
+      `<vscode-option ${iconFamily === style ? "selected" : ""
+      } style="text-transform: capitalize;" value="${style}">${style}</vscode-option>`
+    ).join("");
 
     const copyTypes = ["name", "class", "html", "react", "vue", "svg", "base64", "unicode"];
 
-    const tabsList = copyTypes
-      .map(
-        (type) =>
-          `<vscode-panel-tab data-type="${type}" data-copy-type="${type}" style="text-transform: capitalize;">${type}</vscode-panel-tab>`
-      )
-      .join("");
-    const viewsList = copyTypes
-      .map(
-        (type) => `
+    const tabsList = copyTypes.map((type) =>
+      `<vscode-panel-tab data-type="${type}" data-copy-type="${type}" style="text-transform: capitalize;">${type}</vscode-panel-tab>`
+    ).join("");
+    const viewsList = copyTypes.map((type) => `
       <vscode-panel-view class="p-0" id="${type}-snippet-view">
           <vscode-text-area readonly class="w-100" value="" rows=1 data-type="${type}" data-copy-type="${type}"></vscode-text-area>
       </vscode-panel-view>
     `
-      )
-      .join("");
+    ).join("");
 
     const cheatSheetIcon =
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>';
@@ -269,7 +260,7 @@ export class IconsView implements vscode.WebviewViewProvider {
     // Use a nonce to only allow a specific script to be run.
     const nonce = getNonce();
 
-    return `<!DOCTYPE html>
+    return /* html */`<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">

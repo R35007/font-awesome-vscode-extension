@@ -1,8 +1,8 @@
 {
   "name": "font-awesome",
   "displayName": "Font Awesome",
-  "description": "Copy Font awesome Icons as HTML, React, Vue, SVG, Base64, Unicode code snippet. Save icon as png or svg.",
-  "version": "4.1.0",
+  "description": "Copy Font awesome Icons as HTML, React, Vue, SVG, Base64 or Unicode code snippet. Save icon as png, svg or react component",
+  "version": "4.2.0",
   "icon": "images/logo.png",
   "publisher": "Thinker",
   "license": "MIT",
@@ -39,11 +39,6 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:font-awesome.copySnippetAs",
-    "onCommand:font-awesome.download",
-    "onCommand:font-awesome.saveIcon",
-    "onCommand:font-awesome.refreshView",
-    "onView:font-awesome.icons-view",
     "onStartupFinished"
   ],
   "main": "./out/extension.js",
@@ -215,7 +210,7 @@
         "font-awesome.settings.showSnippetSuggestion": {
           "order": 6,
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "Set to false to prevent font awesome icon snippet suggestions."
         },
         "font-awesome.settings.copyOnClick": {

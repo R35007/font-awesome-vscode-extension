@@ -10,15 +10,6 @@ import { getIcons } from './utilities';
 export async function activate(context: vscode.ExtensionContext) {
 
     const icons = await getIcons();
-    const snippetTypes: Array<keyof typeof icons[0]> = ["class", "html", "react", "vue", "svg", "base64"];
-
-    const iconSnippets: vscode.CompletionItem[] = icons.map(icon => {
-        return snippetTypes.map((type) => {
-            const completionItem = new vscode.CompletionItem(`fa:${icon.name}:${icon.family}:${type}`, vscode.CompletionItemKind.Property);
-            completionItem.insertText = icon[type] as string;
-            return completionItem;
-        });
-    }).flat();
 
     const storage = new LocalStorageService(context.workspaceState);
     const iconsView = new IconsView(context.extensionUri, storage, icons);
@@ -92,13 +83,29 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand(Commands.DOWNLOAD_ARCHIVE, () => iconsView.downloadIconArchive()));
     context.subscriptions.push(vscode.window.registerWebviewViewProvider(IconsView.viewType, iconsView));
 
-    const snipperLangs = ['javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'xml', 'html', 'less', 'scss', 'sass', 'css'];
+    const snippetTypes: Array<keyof typeof icons[0]> = ["class", "html", "react", "vue", "svg", "base64"];
+    const getIconSnippets = (position: vscode.Position, linePrefix: string): vscode.CompletionItem[] => icons.map(icon => snippetTypes.map((type) => {
+        const completionItem = new vscode.CompletionItem(`fa:${icon.name}:${icon.family}:${type}`, vscode.CompletionItemKind.Property);
+        completionItem.insertText = icon[type] as string;
+        completionItem.range = new vscode.Range(
+            position.line,
+            linePrefix.length - 3,
+            position.line,
+            position.character
+        );
+        return completionItem;
+    })).flat();
+
+    const snipperLangs = ['javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'svg', 'xml', 'html', 'less', 'scss', 'sass', 'css'];
     context.subscriptions.push(...snipperLangs.map(lang => vscode.languages.registerCompletionItemProvider(lang, {
-        provideCompletionItems: () => {
+        provideCompletionItems: (document, position) => {
+            // get all text until the `position` and check if it reads `fa:`
+            const linePrefix = document.lineAt(position).text.slice(0, position.character);
             const completionItems: vscode.CompletionItem[] = [];
-            // return if snippet suggestion is set to false
-            if (!Settings.showSnippetSuggestion) return completionItems;
-            return iconSnippets;
+            // return if snippet suggestion is set to false or if linePrefix is not fa:
+            if (!linePrefix.endsWith("fa:") || !Settings.showSnippetSuggestion) return completionItems;
+
+            return getIconSnippets(position, linePrefix);
         }
     })));
 }
