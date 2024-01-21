@@ -1,3 +1,7 @@
+## v4.2.1
+
+- Readme update
+
 ## v4.2.0
 
 - Fixed - Loading more icons on scroll shows Icon name even when we set to hide icon name issue fixed.

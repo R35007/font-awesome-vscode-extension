@@ -2,7 +2,7 @@
   "name": "font-awesome",
   "displayName": "Font Awesome",
   "description": "Copy Font awesome Icons as HTML, React, Vue, SVG, Base64 or Unicode code snippet. Save icon as png, svg or react component",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "icon": "images/logo.png",
   "publisher": "Thinker",
   "license": "MIT",
@@ -15,7 +15,6 @@
     "email": "sivaraman.muralidharan@verzion.com"
   },
   "keywords": [
-    "font",
     "font awesome",
     "font awesome icons",
     "icons",
