@@ -26,7 +26,7 @@ const getTitleCaseName = (name: string) => {
   return titleCaseName.replace(/\s{2,}/g, " ");
 };
 
-export const getStats = (directoryPath: string): PathDetails | undefined => {
+export const getStats = (directoryPath: string, rootFolderPath: string): PathDetails | undefined => {
   if (fs.existsSync(directoryPath)) {
     const stats = fs.statSync(directoryPath);
     const extension = path.extname(directoryPath);
@@ -35,9 +35,9 @@ export const getStats = (directoryPath: string): PathDetails | undefined => {
 
     if (isFile) {
       const dirBaseName = path.basename(path.dirname(directoryPath));
-      const customIconsBaseName = path.basename(Settings.customIconsFolderPath);
+      const customIconsBaseName = path.basename(rootFolderPath);
 
-      const familyName = path.relative(Settings.customIconsFolderPath, path.dirname(directoryPath)).split(path.sep).shift()!;
+      const familyName = path.relative(rootFolderPath, path.dirname(directoryPath)).split(path.sep).shift()!;
 
       const family = familyName !== ".." ? familyName : "";
       const category = [dirBaseName, customIconsBaseName].includes(family) || customIconsBaseName === dirBaseName ? "" : dirBaseName;
@@ -59,8 +59,8 @@ export const getStats = (directoryPath: string): PathDetails | undefined => {
   return;
 };
 
-export const getAllSVGIcons = (directoryPath: string): PathDetails[] => {
-  const stats = getStats(directoryPath);
+export const getAllSVGIcons = (directoryPath: string, rootFolderPath = directoryPath): PathDetails[] => {
+  const stats = getStats(directoryPath, rootFolderPath);
   if (!stats) {
     return [];
   } else if (stats.isFile) {
@@ -68,7 +68,7 @@ export const getAllSVGIcons = (directoryPath: string): PathDetails[] => {
   } else {
     const files = fs.readdirSync(directoryPath);
     const filesList = files.reduce((res: PathDetails[], file: string) => {
-      return res.concat(getAllSVGIcons(`${directoryPath}/${file}`));
+      return res.concat(getAllSVGIcons(`${directoryPath}/${file}`, rootFolderPath));
     }, []);
 
     return filesList;
@@ -127,10 +127,8 @@ const getCustomIconSetsFromFolder = async (customIconsFolderPath: string = ""): 
 export const getIcons = async (): Promise<IconSnippet[]> => {
   try {
     const customIcons = Settings.customIcons;
-    const customIconsFromFolder = await getCustomIconSetsFromFolder(Settings.customIconsFolderPath);
-    const customIconsArchive = Settings.customIconsArchivePath
-      ? await JSON.parse(fs.readFileSync(Settings.customIconsArchivePath, "utf-8"))
-      : [];
+    const customIconsFromFolder = (await Promise.all(([] as string[]).concat(Settings.customIconsFolderPaths).map(getCustomIconSetsFromFolder))).flat();
+    const customIconsArchive = ([] as string[]).concat(Settings.customIconsArchivePaths).map((iconArchiveJsonPath) => JSON.parse(fs.readFileSync(iconArchiveJsonPath, "utf-8"))).flat(); 
 
     const icons: IconSnippet[] = [...regular, ...solid, ...brands, ...customIcons, ...customIconsFromFolder, ...customIconsArchive];
 

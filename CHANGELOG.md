@@ -1,3 +1,8 @@
+## v4.3.0
+
+ - Renamed - `font-awesome.settings.customIconsArchivePath` to `font-awesome.settings.customIconsArchivePaths`. Now we can provide multiple icon archive json paths 
+ - Renamed - `font-awesome.settings.customIconsFolderPath` to `font-awesome.settings.customIconsFolderPaths`. Now we can provide multiple icon folder paths 
+
 ## v4.2.1
 
 - Readme update

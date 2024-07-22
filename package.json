@@ -2,7 +2,7 @@
   "name": "font-awesome",
   "displayName": "Font Awesome",
   "description": "Copy Font awesome Icons as HTML, React, Vue, SVG, Base64 or Unicode code snippet. Save icon as png, svg or react component",
-  "version": "4.2.1",
+  "version": "4.3.0",
   "icon": "images/logo.png",
   "publisher": "Thinker",
   "license": "MIT",
@@ -98,15 +98,21 @@
           "description": "Set .png image width and height to save",
           "additionalProperties": false
         },
-        "font-awesome.settings.customIconsArchivePath": {
+        "font-awesome.settings.customIconsArchivePaths": {
           "order": 3,
-          "type": "string",
-          "description": "Provide a .json file path to Custom Icons"
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Provide a .json file paths to Custom Icons"
         },
-        "font-awesome.settings.customIconsFolderPath": {
+        "font-awesome.settings.customIconsFolderPaths": {
           "order": 4,
-          "type": "string",
-          "description": "Provide a Custom Icons Folder Path."
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Provide a Custom Icons Folder Paths."
         },
         "font-awesome.settings.customIcons": {
           "order": 5,
