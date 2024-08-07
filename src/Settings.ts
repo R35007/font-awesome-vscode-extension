@@ -31,15 +31,7 @@ export class Settings {
   static get showSnippetSuggestion() {
     return Settings.getSettings('showSnippetSuggestion') as boolean;
   }
-  static get copyOnClick() {
-    return Settings.getSettings('copyOnClick') as boolean;
-  }
-  static get copySnippetAs() {
-    return Settings.getSettings('copySnippetAs') as string;
-  }
-  static set copySnippetAs(value: string) {
-    Settings.setSettings('copySnippetAs', value);
-  }
+
   static get showIconName() {
     return Settings.getSettings('showIconName') as boolean;
   }

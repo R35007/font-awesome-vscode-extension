@@ -5,8 +5,6 @@ import { Settings } from './Settings';
 import { Commands } from './enum.constants.modal';
 import { getIcons } from './utilities';
 
-
-
 export async function activate(context: vscode.ExtensionContext) {
 
     const icons = await getIcons();
@@ -19,16 +17,19 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.executeCommand('setContext', key, value);
     };
 
+    setContext('showOnlyFavoriteIcons', false); // Show all icons by default
     setContext('showIconName', true); // Show Icon name by default
     setContext('showIconInfo', true); // Show Icon Snippet by default
     setContext('showCategoryBadge', true); // Show Category badges by default
     setContext('sortByFeature', true); // Sort by Features by default
 
-    context.subscriptions.push(vscode.commands.registerCommand(Commands.COPY_SNIPPET_AS, async () => {
-        const copyType = await vscode.window.showQuickPick(["name", "class", "html", "react", "vue", "svg", "base64", "unicode"]);
-        if (!copyType) return;
-        Settings.copySnippetAs = copyType;
-        iconsView.menuAction("setCopyType", copyType);
+    context.subscriptions.push(vscode.commands.registerCommand(Commands.SHOW_ONLY_FAVORITE_ICONS, () => {
+        setContext('showOnlyFavoriteIcons', true);
+        iconsView.refreshView();
+    }));
+    context.subscriptions.push(vscode.commands.registerCommand(Commands.SHOW_ALL_ICONS, () => {
+        setContext('showOnlyFavoriteIcons', false);
+        iconsView.refreshView();
     }));
 
     context.subscriptions.push(vscode.commands.registerCommand(Commands.SHOW_ICON_NAME, () => {
@@ -80,6 +81,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(vscode.commands.registerCommand(Commands.SAVE_ICON, () => iconsView.saveIcon()));
     context.subscriptions.push(vscode.commands.registerCommand(Commands.REFRESH_VIEW, () => iconsView.refreshView()));
+    context.subscriptions.push(vscode.commands.registerCommand(Commands.RESET_VIEW, () => iconsView.resetView()));
     context.subscriptions.push(vscode.commands.registerCommand(Commands.DOWNLOAD_ARCHIVE, () => iconsView.downloadIconArchive()));
     context.subscriptions.push(vscode.window.registerWebviewViewProvider(IconsView.viewType, iconsView));
 

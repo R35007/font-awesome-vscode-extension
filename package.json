@@ -2,7 +2,7 @@
   "name": "font-awesome",
   "displayName": "Font Awesome",
   "description": "Copy Font awesome Icons as HTML, React, Vue, SVG, Base64 or Unicode code snippet. Save icon as png, svg or react component",
-  "version": "4.3.0",
+  "version": "5.0.0",
   "icon": "images/logo.png",
   "publisher": "Thinker",
   "license": "MIT",
@@ -217,28 +217,6 @@
           "type": "boolean",
           "default": true,
           "description": "Set to false to prevent font awesome icon snippet suggestions."
-        },
-        "font-awesome.settings.copyOnClick": {
-          "order": 7,
-          "type": "boolean",
-          "default": false,
-          "description": "Set to true to copy icon snippet immediately on clicking icon in the list."
-        },
-        "font-awesome.settings.copySnippetAs": {
-          "order": 8,
-          "type": "string",
-          "default": "svg",
-          "enum": [
-            "name",
-            "class",
-            "html",
-            "react",
-            "vue",
-            "svg",
-            "base64",
-            "unicode"
-          ],
-          "description": "Pick a snippet type to copy icon snippet immediately on clicking icon in the list."
         }
       }
     },
@@ -264,26 +242,36 @@
     },
     "commands": [
       {
-        "command": "font-awesome.copySnippetAs",
-        "title": "Set Icon Copy Snippet Type",
-        "category": "Font Awesome"
-      },
-      {
-        "command": "font-awesome.download",
-        "title": "Download Icon Archive",
-        "category": "Font Awesome"
-      },
-      {
         "command": "font-awesome.saveIcon",
         "title": "Save Icon",
         "icon": "$(save)",
         "category": "Font Awesome"
       },
       {
+        "command": "font-awesome.download",
+        "title": "Download Icon Archive",
+        "icon": "$(arrow-down)",
+        "category": "Font Awesome"
+      },
+      {
         "command": "font-awesome.refreshView",
         "title": "Refresh",
+        "icon": "$(sync)",
+        "category": "Font Awesome"
+      },
+      {
+        "command": "font-awesome.resetView",
+        "title": "Reset",
         "icon": "$(refresh)",
         "category": "Font Awesome"
+      },
+      {
+        "command": "font-awesome.showOnlyFavoriteIcons",
+        "title": "⠀⠀Show Only Favorite Icons"
+      },
+      {
+        "command": "font-awesome.showAllIcons",
+        "title": "✓⠀Show Only Favorite Icons"
       },
       {
         "command": "font-awesome.showIconName",
@@ -329,6 +317,14 @@
     "menus": {
       "commandPalette": [
         {
+          "command": "font-awesome.showOnlyFavoriteIcons",
+          "when": "false"
+        },
+        {
+          "command": "font-awesome.showAllIcons",
+          "when": "false"
+        },
+        {
           "command": "font-awesome.showIconName",
           "when": "false"
         },
@@ -371,6 +367,11 @@
       ],
       "view/title": [
         {
+          "command": "font-awesome.download",
+          "group": "navigation@1",
+          "when": "view == font-awesome.icons-view"
+        },
+        {
           "command": "font-awesome.saveIcon",
           "group": "navigation@1",
           "when": "view == font-awesome.icons-view"
@@ -381,34 +382,49 @@
           "when": "view == font-awesome.icons-view"
         },
         {
+          "command": "font-awesome.resetView",
+          "group": "navigation@3",
+          "when": "view == font-awesome.icons-view"
+        },
+        {
+          "command": "font-awesome.showOnlyFavoriteIcons",
+          "when": "view == font-awesome.icons-view && !showOnlyFavoriteIcons",
+          "group": "a@1"
+        },
+        {
+          "command": "font-awesome.showAllIcons",
+          "when": "view == font-awesome.icons-view && showOnlyFavoriteIcons",
+          "group": "a@1"
+        },
+        {
           "command": "font-awesome.showIconName",
           "when": "view == font-awesome.icons-view && !showIconName",
-          "group": "a@1"
+          "group": "a@2"
         },
         {
           "command": "font-awesome.hideIconName",
           "when": "view == font-awesome.icons-view && showIconName",
-          "group": "a@1"
+          "group": "a@2"
         },
         {
           "command": "font-awesome.showIconInfo",
           "when": "view == font-awesome.icons-view && !showIconInfo",
-          "group": "a@2"
+          "group": "a@3"
         },
         {
           "command": "font-awesome.hideIconInfo",
           "when": "view == font-awesome.icons-view && showIconInfo",
-          "group": "a@2"
+          "group": "a@3"
         },
         {
           "command": "font-awesome.showCategoryBadge",
           "when": "view == font-awesome.icons-view && !showCategoryBadge",
-          "group": "a@3"
+          "group": "a@4"
         },
         {
           "command": "font-awesome.hideCategoryBadge",
           "when": "view == font-awesome.icons-view && showCategoryBadge",
-          "group": "a@3"
+          "group": "a@4"
         },
         {
           "submenu": "font-awesome.sort",

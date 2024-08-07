@@ -3,14 +3,16 @@
     <span>Font Awesome</span>
 </h1>
 
-- Copy Font awesome Icons as `Icon Name`, `Icon class name`, `HTML`, `React`, `Vue`, `SVG`, `Base64` and `Unicode` text.
+- Enjoy with 5k Font Awesome free icons.
+- Copy Font awesome Icons as `name`, `class`, `Html`, `React`, `Tsx`, `Jsx`, `Vue`, `SVG`, `Base64` and `Unicode` text.
 - Save icon as `.png`, `.svg`, `.jsx` or `.tsx`
-- Add our own custom icons in the `Font Awesome`.
-  - by adding custom icons folder path in `font-awesome.settings.customIconsFolderPath` vscode settings.
+- Add our own custom icons
+  - by adding custom icons folder paths in `font-awesome.settings.customIconsFolderPaths` vscode settings that contains the `.jpeg`, `.png` or `.svg` icons.
+  - by adding custom icons archive paths in `font-awesome.settings.customIconsArchivePaths` vscode settings that contains the `archive.json`.
   - by giving custom icons object path in `font-awesome.settings.customIcons` vscode settings.
 - Converts any `.png` or `.jpg` image to a `svg` and `base64` formate.
 - Type `fa:` and press `Ctrl+Space` to show list of font awesome icon code snippets.
-  - We can disable the snippet by setting `font-awesome.settings.showSnippetSuggestion: false`
+  - We can disable the snippet by setting `font-awesome.settings.showSnippetSuggestion`: `false`
 
 ## Preview
 

@@ -1,7 +1,22 @@
+## v5.0.0
+
+- Removed - `copyOnClick` and `copySnippetAs`. Double click the icon item to copy the icon or click the `copy` button
+- Fixed - On switching to new Family it picks the corrects `category` and `icon`
+- Fixed - Icon `Family` and `Category` count issue fixed.
+- Fixed - Styling issues and optimized the code.
+- Added - `Light` icons.
+- Added - `tsx` and `jsx` snippets.
+- Added - Now the text area can be resized vertically to view the full snippet
+- Added - Now we can add or remove our favorite icons. To view only the favorite icons check the `Show Only Favorite Icons` on the menu options
+- Added - Match whole word search feature.
+- Added - `resetView` and `refreshView` commands.
+  - `resetView` - reset all view states and renders the icons.
+  - `refreshView` - just simply fetches the icons and rerenders the view
+
 ## v4.3.0
 
- - Renamed - `font-awesome.settings.customIconsArchivePath` to `font-awesome.settings.customIconsArchivePaths`. Now we can provide multiple icon archive json paths 
- - Renamed - `font-awesome.settings.customIconsFolderPath` to `font-awesome.settings.customIconsFolderPaths`. Now we can provide multiple icon folder paths 
+- Renamed - `font-awesome.settings.customIconsArchivePath` to `font-awesome.settings.customIconsArchivePaths`. Now we can provide multiple icon archive json paths
+- Renamed - `font-awesome.settings.customIconsFolderPath` to `font-awesome.settings.customIconsFolderPaths`. Now we can provide multiple icon folder paths
 
 ## v4.2.1
 
