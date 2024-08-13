@@ -1,3 +1,8 @@
+## v5.1.0
+
+- Fixed - styling issue
+- Added - left and right keyboard accessability
+
 ## v5.0.0
 
 - Removed - `copyOnClick` and `copySnippetAs`. Double click the icon item to copy the icon or click the `copy` button

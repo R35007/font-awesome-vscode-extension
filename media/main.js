@@ -120,7 +120,7 @@ function init(iconsList, viewState, ViewType, ViewTypeIcon) {
   const $toggleViewBtn = document.getElementById("view-toggle-btn");
   const $matchWholeWordBtn = document.getElementById("match-whole-word-btn");
   const $iconInfoContainer = document.getElementById("icon-info-container");
-  const $zoomPercent = document.getElementById("zoom-percent");
+  const $iconSize = document.getElementById("icon-size");
   const $copyBtn = document.getElementById("copy-btn");
 
   const renderCategoryOptions = () => {
@@ -171,14 +171,16 @@ function init(iconsList, viewState, ViewType, ViewTypeIcon) {
     $selectedIconImage.innerHTML = selectedIconObj.svg;
     $selectedIconFavoriteBtn.innerHTML = selectedIconObj.favorite ? starFilled : star;
 
-    $selectedIconCategoryBadges.innerHTML = selectedIconObj.categories?.map((category) => `<vscode-badge>${category}</vscode-badge>`).join("") || "";
+    const badges = selectedIconObj.categories?.map((category) => `<vscode-badge tabindex="0">${category}</vscode-badge>`).join("") || "";
+
+    $selectedIconCategoryBadges.innerHTML = `<span>Categories : </span>${badges}`;
   };
 
   const renderIconItems = () => {
     const filteredAndSortedIcons = getSortedIcons(getFilteredIcons(iconsList, viewState), viewState);
 
     // Select first item in list if no icon is selected;
-    if (!filteredAndSortedIcons.find(icon => JSON.stringify(icon) === JSON.stringify(viewState.selectedIcon)) && filteredAndSortedIcons[0]) {
+    if (!filteredAndSortedIcons.find(icon => `${icon.name}-${icon.family}` === `${viewState.selectedIcon.name}-${viewState.selectedIcon.family}`) && filteredAndSortedIcons[0]) {
       setViewState("selectedIcon", filteredAndSortedIcons[0]);
       displaySelectedIconInfo();
     };
@@ -259,15 +261,9 @@ function init(iconsList, viewState, ViewType, ViewTypeIcon) {
   // On Slider change
   document.getElementById("icon-size-slider")?.addEventListener("input", function (event) {
     const value = parseFloat(event.target?.value, 10);
-
-    const minimum = parseInt(event.target?.min);
-    const maximum = parseInt(event.target?.max);
-    const range = maximum - minimum;
-    const zoom = Math.round(((value - minimum) * 100) / range);
-    $zoomPercent.innerText = `${zoom}%`;
+    $iconSize.innerText = `${value}px`;
 
     $iconsList?.style.setProperty('--icon-size', `${value}px`);
-    setViewState("zoom", zoom);
     setViewState("iconSize", value);
 
   });
@@ -299,7 +295,7 @@ function init(iconsList, viewState, ViewType, ViewTypeIcon) {
 
     const viewType = viewSwitch[currentView] || ViewType.Staggered
 
-    setViewState("viewType", viewType);
+    setViewState("viewType", viewType); setViewState("viewType", viewType);
     event.target.dataset.currentView = viewType;
     event.target.innerHTML = ViewTypeIcon[viewType];
     Object.values(ViewType).forEach(view => $iconsList?.classList.remove(`icons-list--${view}`))
@@ -355,10 +351,19 @@ function init(iconsList, viewState, ViewType, ViewTypeIcon) {
   })
   // On Icon item enter
   $iconsList?.addEventListener('keydown', function (event) {
-    if (!event.target?.matches(".icon-item") || event.code !== "Enter") return;
+    if (!event.target?.matches(".icon-item")) return;
+    if (event.code === "Enter")
+      copySnippet(viewState.selectedIcon); // copy snippet
+    if (event.code === "ArrowRight")
+      event.target?.nextElementSibling?.focus();
+    if (event.code === "ArrowLeft")
+      event.target?.previousElementSibling?.focus();
+  })
+  // On Icon item focus
+  $iconsList?.addEventListener('focusin', function (event) {
+    if (!event.target?.matches(".icon-item")) return;
     selectIcon(event);
   })
-
   // Copy Icon on double click
   $iconsList?.addEventListener('dblclick', function (event) {
     if (!event.target?.matches(".icon-item")) return;
@@ -371,5 +376,18 @@ function init(iconsList, viewState, ViewType, ViewTypeIcon) {
     setViewState("iconCategory", event.target.innerHTML);
     renderCategoryOptions();
     renderIconItems();
+  })
+  // On selected Icon badges entered
+  $selectedIconCategoryBadges?.addEventListener('keydown', function (event) {
+    if (!event.target?.matches("vscode-badge")) return;
+    if (event.code === "Enter") {
+      setViewState("iconCategory", event.target.innerHTML);
+      renderCategoryOptions();
+      renderIconItems();
+    };
+    if (event.code === "ArrowRight")
+      event.target?.nextElementSibling?.focus();
+    if (event.code === "ArrowLeft")
+      event.target?.previousElementSibling?.focus();
   })
 }
