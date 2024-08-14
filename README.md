@@ -3,6 +3,16 @@
     <span>Font Awesome</span>
 </h1>
 
+Copy Font awesome Icons as HTML, React, Vue, SVG, Base64, Unicode code snippet etc... 
+<br/> Save icon as png, svg or react component. <br/> Crete new icons from image.
+
+
+<a href="https://buymeacoffee.com/r35007" target="_blank">
+  <img src="https://r35007.github.io/Siva_Profile/images//buymeacoffee.png" />
+</a>
+
+
+## Features
 - Enjoy with 5k Font Awesome free icons.
 - Copy Font awesome Icons as `name`, `class`, `Html`, `React`, `Tsx`, `Jsx`, `Vue`, `SVG`, `Base64` and `Unicode` text.
 - Save icon as `.png`, `.svg`, `.jsx` or `.tsx`

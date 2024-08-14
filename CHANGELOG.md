@@ -1,3 +1,7 @@
+## v5.2.1
+
+- Readme update
+
 ## v5.2.0
 
 - Fixed - view states are not preserved on reload view issue fixed
