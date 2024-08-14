@@ -191,11 +191,14 @@ ul.icons-list {
   }
 
   &--icon-only {
-    display: flex;
+    display: grid;
+    --icon-padding: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(calc(var(--icon-size) + calc(var(--icon-padding) * 2)), 1fr));
 
     li.icon-item {
-      max-width: fit-content;
-      padding: 1rem;
+      padding: var(--icon-padding);
+      justify-content: center;
+      align-items: center;
 
       .icon-name {
         display: none;
@@ -348,7 +351,8 @@ ul.icons-list {
 
 #selected-icon-category-badges {
   overflow: hidden;
-  max-height: 3.5rem;
+  max-height: 1.5rem;
+  min-height: 1.5rem;
   transition: all 0.2s ease-in-out;
 
   vscode-badge {

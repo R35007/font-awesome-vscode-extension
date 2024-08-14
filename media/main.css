@@ -178,12 +178,14 @@ ul.icons-list--grid li.icon-item .icon-name {
   text-align: center;
 }
 ul.icons-list--icon-only {
-  display: flex;
+  display: grid;
+  --icon-padding: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(calc(var(--icon-size) + var(--icon-padding) * 2), 1fr));
 }
 ul.icons-list--icon-only li.icon-item {
-  max-width: -moz-fit-content;
-  max-width: fit-content;
-  padding: 1rem;
+  padding: var(--icon-padding);
+  justify-content: center;
+  align-items: center;
 }
 ul.icons-list--icon-only li.icon-item .icon-name {
   display: none;
@@ -312,7 +314,8 @@ ul.icons-list--inverted li.icon-item .icon-name {
 
 #selected-icon-category-badges {
   overflow: hidden;
-  max-height: 3.5rem;
+  max-height: 1.5rem;
+  min-height: 1.5rem;
   transition: all 0.2s ease-in-out;
 }
 #selected-icon-category-badges vscode-badge:focus-visible {

@@ -1,7 +1,15 @@
+## v5.2.0
+
+- Fixed - view states are not preserved on reload view issue fixed
+- Fixed - Icons are not preselected on reload issue fixed
+- Added - up and down keyboard accessability for icon items
+- Added - show number of categories for the selected icon
+- Modified - Icon Archive is updated to have maximum of 10 categories for each icon
+
 ## v5.1.0
 
 - Fixed - styling issue
-- Added - left and right keyboard accessability
+- Added - left and right keyboard accessability for icon items
 
 ## v5.0.0
 

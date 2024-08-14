@@ -58,7 +58,7 @@ const getSortedIcons = (icons, viewState) => {
 
 const getIconItemsList = (icons = [], viewState) => {
   return icons.map((icon) => {
-    const isSelectedIcon = JSON.stringify(icon) === JSON.stringify(viewState.selectedIcon);
+    const isSelectedIcon = `${icon.name}-${icon.family}` === `${viewState.selectedIcon.name}-${viewState.selectedIcon.family}`;
     return /* html */`
                 <li class="icon-item flex-auto ${isSelectedIcon ? "selected" : ""}" 
                     tabindex="0"
@@ -107,6 +107,7 @@ function init(iconsList, viewState, ViewType, ViewTypeIcon) {
 
   if (!categoriesByFamily[viewState.iconFamily]?.includes(viewState.iconCategory)) setViewState('iconCategory', 'all');
 
+  const $html = document.getElementsByTagName("html")[0];
   const $iconCategoryDropDownContainer = document.getElementById("icon-category-dropdown-container");
   const $categoryCount = document.getElementById("category-count");
   const $iconsList = document.getElementById("icons-list"); // ul
@@ -173,14 +174,15 @@ function init(iconsList, viewState, ViewType, ViewTypeIcon) {
 
     const badges = selectedIconObj.categories?.map((category) => `<vscode-badge tabindex="0">${category}</vscode-badge>`).join("") || "";
 
-    $selectedIconCategoryBadges.innerHTML = `<span>Categories : </span>${badges}`;
+    $selectedIconCategoryBadges.innerHTML = `<span>Categories : ${selectedIconObj.categories.length} </span>${badges}`;
   };
 
-  const renderIconItems = () => {
+  const renderIconItems = (isFiltered) => {
     const filteredAndSortedIcons = getSortedIcons(getFilteredIcons(iconsList, viewState), viewState);
 
     // Select first item in list if no icon is selected;
-    if (!filteredAndSortedIcons.find(icon => `${icon.name}-${icon.family}` === `${viewState.selectedIcon.name}-${viewState.selectedIcon.family}`) && filteredAndSortedIcons[0]) {
+    if (isFiltered && filteredAndSortedIcons[0]) {
+      $html.scrollTop = 0;
       setViewState("selectedIcon", filteredAndSortedIcons[0]);
       displaySelectedIconInfo();
     };
@@ -249,12 +251,12 @@ function init(iconsList, viewState, ViewType, ViewTypeIcon) {
     setViewState("copySnippetAs", event.target.dataset.copyType);
   })
 
-  // On search input change
+  // On search or filter icons
   document.getElementById("search-icon-textbox")?.addEventListener(
     "keyup",
     debounce(function () {
       setViewState("searchText", this.value.toLowerCase().trim());
-      renderIconItems();
+      renderIconItems(true);
     })
   );
 
@@ -354,10 +356,47 @@ function init(iconsList, viewState, ViewType, ViewTypeIcon) {
     if (!event.target?.matches(".icon-item")) return;
     if (event.code === "Enter")
       copySnippet(viewState.selectedIcon); // copy snippet
+  })
+  // On Icon item left and right arrow press
+  $iconsList?.addEventListener('keydown', function (event) {
+    if (!event.target?.matches(".icon-item")) return;
     if (event.code === "ArrowRight")
       event.target?.nextElementSibling?.focus();
     if (event.code === "ArrowLeft")
       event.target?.previousElementSibling?.focus();
+  })
+  // On Icon item up and down arrow press
+  $iconsList?.addEventListener('keydown', function (event) {
+    if (!event.target?.matches(".icon-item")) return;
+
+    let currentElement = event.target;
+
+    const containerComputerStyle = window.getComputedStyle($iconsList);
+    const col = containerComputerStyle.getPropertyValue('grid-template-columns').replace(' 0px', '').split(' ').length;
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      for (let i = 0; i < col; i++) {
+        if (currentElement.previousElementSibling) {
+          currentElement = currentElement.previousElementSibling;
+        } else {
+          break;
+        }
+      }
+      currentElement.focus();
+
+    } else if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      for (let i = 0; i < col; i++) {
+        if (currentElement.nextElementSibling) {
+          currentElement = currentElement.nextElementSibling;
+        } else {
+          break;
+        }
+      }
+      currentElement.focus();
+
+    }
   })
   // On Icon item focus
   $iconsList?.addEventListener('focusin', function (event) {
