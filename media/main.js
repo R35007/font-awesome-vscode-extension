@@ -16,21 +16,36 @@ const debounce = (fn, ms = 200) => {
 
 const sanitize = (str = '') => `${str}`.replace(/\-/g, "").replace(/\s/g, "").toLowerCase();
 const toTrimLoweCase = (str = '') => `${str?.trim()}`.replace(/\s+/g, ' ').trim().toLowerCase();
-const isPartiallyMatched = (textToMatch = '', icon = {}) => Object.values(icon).flat().filter(Boolean).map(sanitize).some((item) => item.includes(sanitize(textToMatch)));
 const isExactlyMatched = (textToMatch = '', icon = {}) => sanitize(textToMatch) === sanitize(icon.name) || sanitize(textToMatch) === sanitize(icon.label);
 const isMatched = (textToMatch = '', matchList = []) => matchList.map(sanitize).some(text => text.startsWith(sanitize(textToMatch)) || text.includes(sanitize(textToMatch)));
+const isPartiallyMatched = (textToMatch = '', icon = {}) => {
+
+  const matchList = [
+    icon.name,
+    icon.label,
+    icon.objectID,
+    icon.unicode,
+    icon.ranking,
+    icon.family,
+    icon.class,
+    ...(icon.categories || []),
+    ...(icon.keywords || [])
+  ].filter(Boolean);
+
+  return matchList.filter(Boolean).map(sanitize).some((item) => item.includes(sanitize(textToMatch)));
+}
 
 const getFilteredIcons = (icons, viewState) => icons
   .filter(({ family }) => (viewState.iconFamily === "all" ? true : viewState.iconFamily.toLowerCase() === family.toLowerCase()))
-  .filter(({ categories }) => viewState.iconCategory === "all" ? true : isPartiallyMatched(viewState.iconCategory, categories))
+  .filter(({ categories }) => viewState.iconCategory === "all" ? true : categories.map(c => c.toLowerCase()).includes(viewState.iconCategory.toLowerCase()))
   .filter((icon) => viewState.matchWholeWord && viewState.searchText?.trim().length ? isExactlyMatched(viewState.searchText, icon) : isPartiallyMatched(viewState.searchText, icon));
 
 const getSortedIcons = (icons, viewState) => {
   // sort by alphabet
   if (!viewState.sortByFeature) {
     return icons.toSorted((a, b) => {
-      if (a.label < b.label) return -1;
-      if (a.label > b.label) return 1;
+      if (a.label.toLowerCase() < b.label.toLowerCase()) return -1;
+      if (a.label.toLowerCase() > b.label.toLowerCase()) return 1;
       return 0;
     });
   }
@@ -50,9 +65,31 @@ const getSortedIcons = (icons, viewState) => {
       if ((!aName.startsWith(searchText) && bName.startsWith(searchText)) || (!aLabel.startsWith(searchText) && bLabel.startsWith(searchText))) return 1;
       if ((aName.includes(searchText) && !bName.includes(searchText)) || (aLabel.includes(searchText) && !bLabel.includes(searchText))) return -1;
       if ((!aName.includes(searchText) && bName.includes(searchText)) || (!aLabel.includes(searchText) && bLabel.includes(searchText))) return 1;
+      return 0;
     });
 
-  // sort by feature by default
+  // sort by features
+
+  // sort by family if no family is selected
+  if (viewState.iconFamily === 'all' && viewState.iconCategory === 'all')
+    return icons.toSorted((a, b) => {
+      if (a.family.toLowerCase() < b.family.toLowerCase()) return -1;
+      if (a.family.toLowerCase() > b.family.toLowerCase()) return 1;
+      const aCategory = viewState.allCategories.findIndex(cat => a.categories.includes(cat));
+      const bCategory = viewState.allCategories.findIndex(cat => b.categories.includes(cat));
+      return aCategory - bCategory;
+    });
+
+  // sort by categories if family is selected and no categories is selected
+  if (viewState.iconFamily !== 'all' && viewState.iconCategory === 'all') {
+    const allCategories = viewState.categoriesByFamily[viewState.iconFamily];
+    return icons.toSorted((a, b) => {
+      const aCategory = allCategories.findIndex(cat => a.categories.includes(cat));
+      const bCategory = allCategories.findIndex(cat => b.categories.includes(cat));
+      return aCategory - bCategory;
+    });
+  }
+
   return icons;
 };
 
@@ -62,9 +99,13 @@ const getIconItemsList = (icons = [], viewState) => {
     return /* html */`
                 <li class="icon-item flex-auto ${isSelectedIcon ? "selected" : ""}" 
                     tabindex="0"
+                    ${isSelectedIcon ? "aria-selected" : ""}
                     title="${icon.name} - ${icon.family}"
                     data-icon-name="${icon.name}"
+                    data-icon-label="${icon.label}"
                     data-icon-family="${icon.family}"
+                    data-icon-categories="${icon.categories.join(', ')}"
+                    data-icon-keywords="${icon.keywords.join(', ')}"
                 >
                     <div class="icon">${icon.svg}</div>
                     <div class="icon-name">${icon.label}</div>
@@ -104,8 +145,10 @@ function init(iconsList, viewState, ViewType, ViewTypeIcon) {
     return { ...res, [icon.family]: [...new Set(categories)] }
   }, {});
   const allCategories = Object.entries(categoriesByFamily).reduce((res, [_key, categories]) => [...new Set(res.concat(categories))].sort(), []);
+  viewState.categoriesByFamily = categoriesByFamily;
+  viewState.allCategories = allCategories;
 
-  if (!categoriesByFamily[viewState.iconFamily]?.includes(viewState.iconCategory)) setViewState('iconCategory', 'all');
+  if (viewState.iconFamily !== 'all' && !categoriesByFamily[viewState.iconFamily]?.includes(viewState.iconCategory)) setViewState('iconCategory', 'all');
 
   const $html = document.getElementsByTagName("html")[0];
   const $iconCategoryDropDownContainer = document.getElementById("icon-category-dropdown-container");
@@ -172,7 +215,7 @@ function init(iconsList, viewState, ViewType, ViewTypeIcon) {
     $selectedIconImage.innerHTML = selectedIconObj.svg;
     $selectedIconFavoriteBtn.innerHTML = selectedIconObj.favorite ? starFilled : star;
 
-    const badges = selectedIconObj.categories?.map((category) => `<vscode-badge tabindex="0">${category}</vscode-badge>`).join("") || "";
+    const badges = selectedIconObj.categories?.sort().map((category) => `<vscode-badge tabindex="0">${category}</vscode-badge>`).join("") || "";
 
     $selectedIconCategoryBadges.innerHTML = `<span>Categories : ${selectedIconObj.categories.length} </span>${badges}`;
   };
@@ -199,7 +242,7 @@ function init(iconsList, viewState, ViewType, ViewTypeIcon) {
   };
 
   renderCategoryOptions(); // render categories options on page load
-  renderIconItems(); // render icon items on page load
+  renderIconItems(true); // render icon items on page load
   displaySelectedIconInfo(); // render selected icon on page load
 
   // Handle messages sent from the extension to the webview
@@ -234,14 +277,14 @@ function init(iconsList, viewState, ViewType, ViewTypeIcon) {
   document.getElementById("icon-family")?.addEventListener("change", function (event) {
     setViewState("iconFamily", event.target?.value);
     renderCategoryOptions();
-    renderIconItems();
+    renderIconItems(true);
   });
 
   // On icon Category change
   $iconCategoryDropDownContainer?.addEventListener("change", function (event) {
     if (!event.target?.matches("vscode-dropdown")) return;
     setViewState("iconCategory", event?.target.value);
-    renderIconItems();
+    renderIconItems(true);
   });
 
   // On Tab switch

@@ -1,3 +1,9 @@
+## v5.2.2
+
+- Fixed - Snippet React Component name is not in pascal case issue fixed
+- Fixed - sort by feature
+- Fixed - searching icons retuning a irrelevant icons issue fixed
+
 ## v5.2.1
 
 - Readme update

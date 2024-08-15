@@ -18,27 +18,46 @@ const regular = require("../icons/regular.json");
 const solid = require("../icons/solid.json");
 const light = require("../icons/light.json");
 
-export const toTitleCaseName = (name: string) => {
-  const nameChunk = name
-    .replace(/(_|-)suite/gi, " ")
-    .replace(/(_|-)/gi, " ")
-    .split(/(_|-|\s)/g);
-  const titleCaseName = nameChunk.map((n) => n.charAt(0).toUpperCase() + n.substring(1).toLowerCase()).join(" ");
-  return titleCaseName.replace(/\s{2,}/g, " ");
-};
+const defaultIcons = [...brands, ...light, ...regular, ...solid];
 
-export const toAlphaNumericCase = (input: string = "") =>
+// ALPHANUMERIC CASE --> Keep only alphabets and numbers and remove all special characters
+/** @example "Foo--123-Bar-@-Qux-Baz" = "Foo 123 Bar Qux Baz" */
+const toAlphaNumericCase = (input: string = "") =>
   input
     .trim()
     .replace(/[^a-zA-Z0-9 ]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 
-export const toComponentNameCase = (name: string) => {
-  return toAlphaNumericCase(toTitleCaseName(name).replace(/^[^a-zA-Z]+/, '')).replace(/\s/g, "");
-};
+// SPACE CASE -> Adds space before uppercase characters
+/** @example "fooBarQuxBaz" = "Foo Bar Qux Baz" */
+const toSpaceCase = (input: string = "") =>
+  toAlphaNumericCase(input)
+    .replace(/([A-Z])/g, " $1")
+    .replace(/\s+/g, " ")
+    .trim();
 
-export const getJsxComponentSnippet = (iconName: string, svg: string) => `export function ${toComponentNameCase(iconName)}Icon (props) {
+/** @example "FooBar-Qux__Baz-fooBar" = "FooBarQuxBazFooBar" */
+const toPascalCase = (input: string = "") =>
+  toSpaceCase(input)
+    .replace(/(?:^\w|[A-Z]|\b\w)/g, (match) => match.toUpperCase())
+    .replace(/\s+/g, "") // remove all spaces
+    .trim();
+
+
+function toComponentNameCase(name: string) {
+  // Add prefix "Icon" if the string starts with a number
+  if (/^\d/.test(name)) {
+    name = 'Icon' + name;
+  }
+  return toPascalCase(name);
+}
+
+const distinct = (value: string[] = []) => [...new Set(value)];
+
+const sanitizedKeywords = (keywords: string[] = []) => distinct(keywords.map(kw => kw.toLowerCase()).filter(Boolean));
+
+export const getJsxComponentSnippet = (iconName: string, svg: string) => `export function ${toComponentNameCase(iconName)} (props) {
   return (
     ${svg.replace("<svg", "<svg {...props} ")}
   )
@@ -46,7 +65,7 @@ export const getJsxComponentSnippet = (iconName: string, svg: string) => `export
 
 export const getTsxComponentSnippet = (iconName: string, svg: string) => `import type { SVGProps } from "react";
 
-export function ${toComponentNameCase(iconName)}Icon (props: SVGProps<SVGSVGElement>) {
+export function ${toComponentNameCase(iconName)} (props: SVGProps<SVGSVGElement>) {
 return (
   ${svg.replace("<svg", "<svg {...props} ")}
   )
@@ -70,9 +89,9 @@ export const getStats = (directoryPath: string, rootFolderPath: string): PathDet
       const category = [dirBaseName, customIconsBaseName].includes(family) || customIconsBaseName === dirBaseName ? "" : dirBaseName;
       const iconName = fileName;
       return {
-        category: toTitleCaseName(category).toLowerCase(),
-        family: toTitleCaseName(family).toLowerCase(),
-        iconName: toTitleCaseName(iconName),
+        category: toComponentNameCase(category).toLowerCase(),
+        family: toComponentNameCase(family).toLowerCase(),
+        iconName: toComponentNameCase(iconName),
         extension,
         filePath: directoryPath,
         isFile: stats.isFile(),
@@ -151,24 +170,33 @@ const getCustomIconSetsFromFolder = async (customIconsFolderPath: string = ""): 
   }
 };
 
-export const getIcons = async (): Promise<IconSnippet[]> => {
+const getCustomIconSets = async () => {
   try {
     const customIcons = Settings.customIcons;
     const customIconsFromFolder = (await Promise.all(([] as string[]).concat(Settings.customIconsFolderPaths).map(getCustomIconSetsFromFolder))).flat();
     const customIconsArchive = ([] as string[]).concat(Settings.customIconsArchivePaths).map((iconArchiveJsonPath) => JSON.parse(fs.readFileSync(iconArchiveJsonPath, "utf-8"))).flat();
 
-    const icons: IconSnippet[] = [...regular, ...solid, ...light, ...brands, ...customIcons, ...customIconsFromFolder, ...customIconsArchive];
-
-    const uniqueIcons = [...new Map(icons.map((icon) => [`${icon.name}-${icon.family}`, icon])).values()];
-
-    return uniqueIcons.map(icon => ({
+    const customIconsList = [...customIcons, ...customIconsFromFolder, ...customIconsArchive];
+    return customIconsList.map(icon => ({
       ...icon,
-      categories: icon.categories.length ? icon.categories : ["others"],
-      keywords: icon.keywords.length ? icon.keywords : [icon.name, "others"],
-      react: icon.react ?? `<${toComponentNameCase(icon.name!)} />`,
-      tsx: icon.tsx ?? getTsxComponentSnippet(icon.name!, icon.svg),
-      jsx: icon.jsx ?? getJsxComponentSnippet(icon.name!, icon.svg),
+      categories: icon.categories?.length ? icon.categories : ["others"],
+      keywords: icon.keywords?.length ? sanitizedKeywords([...icon.keywords, icon.name, icon.label, ...icon.categories]) : sanitizedKeywords([icon.name, icon.label, ...icon.categories, "others"]),
+      react: icon.react ?? `<${toComponentNameCase(icon.name)} />`,
+      tsx: icon.tsx ?? getTsxComponentSnippet(icon.name, icon.svg),
+      jsx: icon.jsx ?? getJsxComponentSnippet(icon.name, icon.svg),
     }));
+  } catch (err: any) {
+    vscode.window.showErrorMessage(err.message);
+    return [] as IconSnippet[];
+  }
+}
+
+export const getIcons = async (): Promise<IconSnippet[]> => {
+  try {
+    const customIcons: IconSnippet[] = await getCustomIconSets();
+    const icons: IconSnippet[] = [...defaultIcons, ...customIcons];
+    const uniqueIcons = [...new Map(icons.map((icon) => [`${icon.name}-${icon.family}`, icon])).values()];
+    return uniqueIcons;
   } catch (err: any) {
     vscode.window.showErrorMessage(err.message);
     return [...regular, ...solid, ...brands];

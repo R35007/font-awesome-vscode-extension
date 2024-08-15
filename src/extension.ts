@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { IconsView } from './IconsView';
+import { IconsView } from './IconView_Sidebar';
 import LocalStorageService from './LocalStorageService';
 import { Settings } from './Settings';
 import { Commands } from './enum.constants.modal';
