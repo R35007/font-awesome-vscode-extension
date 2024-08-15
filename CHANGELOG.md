@@ -1,3 +1,7 @@
+## v5.2.3
+
+- Fixed - Removed Font Awesome comments from svg snippets
+
 ## v5.2.2
 
 - Fixed - Snippet React Component name is not in pascal case issue fixed
